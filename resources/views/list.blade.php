@@ -38,7 +38,7 @@
                 <div id="collapseOne" class="accordion-collapse collapse add" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <div class=" w-100 ps-3 pb-2 pt-2">
-                            <a href=""
+                            <a href="{{url('/medididas-de-tendencia-central/media')}}"
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora
                                 de media</a>
 
@@ -52,6 +52,11 @@
                             <a href=""
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora
                                 de moda</a>
+                        </div>
+
+                        <div class=" w-100 ps-3 pb-2">
+                            <a href=""
+                                class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora de muestra</a>
                         </div>
                     </div>
                 </div>
