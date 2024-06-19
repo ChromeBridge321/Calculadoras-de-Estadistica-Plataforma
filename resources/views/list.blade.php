@@ -44,18 +44,18 @@
 
                         </div>
                         <div class=" w-100 ps-3 pb-2">
-                            <a href=""
+                            <a href="{{url('/medididas-de-tendencia-central/mediana')}}"
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora
                                 de mediana</a>
                         </div>
                         <div class=" w-100 ps-3 pb-2">
-                            <a href=""
+                            <a href="{{url('/medididas-de-tendencia-central/moda')}}"
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora
                                 de moda</a>
                         </div>
 
                         <div class=" w-100 ps-3 pb-2">
-                            <a href=""
+                            <a href="{{ url('/medididas-de-tendencia-central/muestra') }}"
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora de muestra</a>
                         </div>
                     </div>

@@ -96,4 +96,35 @@ class FuncionesController extends Controller
             ->with('promedio', $promedio)
             ->with('moda', $moda);
     }
-}
+
+
+    public function muestra(Request $request){
+
+        $poblacion = $request->poblacion;
+        $poblacion_1 = $request->poblacion_1;
+        $confianza_1 = (($request->confianza_1)*($request->confianza_1));
+        $probabilidadP_1 = $request->probabilidadP_1;
+        $probabilidadN_1 = $request->probabilidadN_1;
+        $confianza_2 = (($request->confianza_2)*($request->confianza_2));
+        $probabilidadP_2 = $request->probabilidadP_2;
+        $probabilidadN_2 = $request->probabilidadN_2;
+        $margenR = (($request->margenR) * ($request->margenR));
+
+
+        $muestra = (($poblacion) * ($confianza_1) * ($probabilidadP_1) * ($probabilidadN_1)) / 
+        (($margenR * $poblacion_1) + (($confianza_2) * ($probabilidadN_2) * ($probabilidadP_2)));
+        
+        $moda = 0;
+        $operacion = 4;
+        $promedio = 0;
+        $mediana = 0;
+        return view('MedidasTendencia')
+            ->with('mediana', $mediana)
+            ->with('operacion', $operacion)
+            ->with('promedio', $promedio)
+            ->with('moda', $moda)
+            ->with('muestra', $muestra); 
+
+        }
+    }
+
