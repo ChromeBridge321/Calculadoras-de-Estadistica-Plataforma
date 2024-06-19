@@ -56,7 +56,22 @@ Route::get('/medididas-de-tendencia-central/muestra', function () {
 });
 
 
+
+
 Route::post('/medididas-de-tendencia-central/media/resultado', [App\Http\Controllers\FuncionesController::class, 'media'])->name('media');
 Route::post('/medididas-de-tendencia-central/mediana/resultado', [App\Http\Controllers\FuncionesController::class, 'mediana'])->name('mediana');
 Route::post('/medididas-de-tendencia-central/moda/resultado', [App\Http\Controllers\FuncionesController::class, 'moda'])->name('moda');
 Route::post('/medididas-de-tendencia-central/muestra/resultado', [App\Http\Controllers\FuncionesController::class, 'muestra'])->name('muestra');
+
+Route::get('/tablas-de-distribucion-de-frecuencias/datos/agrupados', function(){
+    $media = 0;
+    $mediana = 0;
+    $moda = 0;
+    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda);
+});
+
+Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function(){
+    return view('TablasFrecuencias');
+});
+
+Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'tablafrecuencia'])->name('tablas');

@@ -71,12 +71,12 @@
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <div class=" w-100 ps-3 pb-2">
-                            <a href=""
+                            <a href="{{url('/tablas-de-distribucion-de-frecuencias/datos/agrupados')}}"
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Datos
                                 agrupados</a>
                         </div>
                         <div class=" w-100 ps-3 pb-2">
-                            <a href=""
+                            <a href="{{url('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados')}}"
                                 class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Datos
                                 no agrupados</a>
                         </div>
