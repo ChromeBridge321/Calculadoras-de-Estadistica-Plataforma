@@ -67,11 +67,30 @@ Route::get('/tablas-de-distribucion-de-frecuencias/datos/agrupados', function(){
     $media = 0;
     $mediana = 0;
     $moda = 0;
-    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda);
+    $varianza = 0;
+    $estandarD = 0;
+    $desviacionM = 0;
+    $operacion = 1;
+    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda)
+    ->with('varianza',$varianza)->with('estandarD',$estandarD)->with('desviacionM',$desviacionM)
+    ->with('operacion',$operacion);
 });
 
 Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function(){
-    return view('TablasFrecuencias');
+    $media = 0;
+    $mediana = 0;
+    $moda = 0;
+    $varianza = 0;
+    $estandarD = 0;
+    $desviacionM = 0;
+    $operacion = 2;
+    $frequencyDistribution[0][0] = '';
+    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda)
+    ->with('varianza',$varianza)->with('estandarD',$estandarD)->with('desviacionM',$desviacionM)
+    ->with('operacion',$operacion)->with('frequencyDistribution',$frequencyDistribution);
 });
 
-Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'tablafrecuencia'])->name('tablas');
+
+
+Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'tablafrecuencia'])->name('tabla1');
+Route::post('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'showFrequencyDistribution'])->name('showFrequencyDistribution');

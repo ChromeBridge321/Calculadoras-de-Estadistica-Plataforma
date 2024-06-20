@@ -127,10 +127,32 @@ class FuncionesController extends Controller
     public function tablafrecuencia(Request $request)
     {
         $datos = $request->datos;
-        $media = $this->Tmedia($datos);
+        $media = round(floatval($this->Tmedia($datos)), 3);
         $mediana = $this->Tmediana($datos);
         $moda = $this->Tmoda($datos);
-        return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda);
+        
+
+
+         // Obtén la cadena de números del request
+         $numbersString = $request->datos;
+
+         // Convertir la cadena en un array de números
+         $numbersArray = explode(',', $numbersString);
+ 
+         // Calcular la frecuencia de cada número
+         $frequency = array_count_values($numbersArray);
+         //cantidad de numeros
+         $n = count($numbersArray);
+         $varianza = round(floatval($this ->varianza($numbersArray)), 3);
+         $estandarD = round(floatval(sqrt($varianza)), 3);
+         $desviacionM = round(floatval($this->desviacionM($numbersArray)), 3);
+         $operacion = 1;
+ 
+         // Ordenar los números por su valor
+         ksort($frequency);
+         return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda)
+         ->with('frequency',$frequency)->with('n',$n)->with('varianza',$varianza)->with('estandarD',$estandarD)
+         ->with('desviacionM',$desviacionM)->with('operacion',$operacion);
     }
 
     private function Tmedia($datos)
@@ -189,4 +211,231 @@ class FuncionesController extends Controller
         $moda = implode(',', $moda);
         return $moda;
     }
+
+
+    private function varianza($numbersArray)
+    {
+        $n = count($numbersArray);
+        if ($n === 0) {
+            return 0; // Evitar división por cero
+        }
+
+        $mean = array_sum($numbersArray) / $n;
+        $sumOfSquares = 0;
+
+        foreach ($numbersArray as $number) {
+            $sumOfSquares += pow(($number - $mean), 2);
+        }
+
+        $variance = $sumOfSquares / $n;
+
+        return $variance;
+    }
+
+
+    function desviacionM($numbersArray)
+{
+    $n = count($numbersArray);
+    if ($n === 0) {
+        return 0; // Evitar división por cero
+    }
+
+    // Calcular la media (promedio)
+    $mean = array_sum($numbersArray) / $n;
+
+    // Calcular la suma de las diferencias absolutas
+    $sumOfAbsoluteDifferences = 0;
+    foreach ($numbersArray as $number) {
+        $sumOfAbsoluteDifferences += abs($number - $mean);
+    }
+
+    // Calcular la desviación media como la suma de las diferencias absolutas dividida por n
+    $meanAbsoluteDeviation = $sumOfAbsoluteDifferences / $n;
+
+    return $meanAbsoluteDeviation;
+}
+
+public function showFrequencyDistribution(Request $request)
+{
+    // Datos estáticos
+    $datos = $request->datos;
+    $data = explode(',', $datos);
+
+    // Llamamos a la función para calcular la distribución de frecuencias
+    $frequencyDistribution = $this->calculateFrequencyDistribution($data);
+    $media = $this->calculateMean($frequencyDistribution);
+    $mediana = $this->calculateMedian($frequencyDistribution, count($data));
+    $moda = $this->calculateMode($frequencyDistribution);
+    $varianza = $this->calculateVariance($frequencyDistribution, $media);
+    $desviacionM = $this->calculateMeanDeviation($frequencyDistribution, $media);
+    $estandarD = $this->calculateStdDeviation($varianza);
+    $operacion = 2;
+    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda)
+    ->with('varianza',$varianza)->with('estandarD',$estandarD)->with('desviacionM',$desviacionM)
+    ->with('operacion',$operacion)->with('frequencyDistribution',$frequencyDistribution);
+}
+
+private function calculateFrequencyDistribution($data)
+{
+    // Ordenamos los datos
+    sort($data);
+
+    // Calculamos el número de intervalos usando la raíz cuadrada del número de datos
+    $numIntervals = ceil(sqrt(count($data)));
+
+    // Obtenemos el valor mínimo y máximo
+    $min = min($data);
+    $max = max($data);
+
+    // Calculamos el tamaño del intervalo y redondeamos si es necesario
+    $intervalSize = ($max - $min) / $numIntervals;
+    $intervalSize = ceil($intervalSize); // Redondeamos hacia arriba
+
+    // Inicializamos los intervalos, frecuencias y otras variables
+    $intervals = [];
+    $frequencies = array_fill(0, $numIntervals, 0);
+    $classMarks = [];
+    $absoluteFrequencies = [];
+    $cumulativeFrequencies = [];
+    $relativeFrequencies = [];
+    $cumulativeRelativeFrequencies = [];
+
+    // Definimos los intervalos y calculamos las marcas de clase
+    for ($i = 0; $i < $numIntervals; $i++) {
+        $lowerBound = $min + ($i * $intervalSize);
+        $upperBound = $lowerBound + $intervalSize - 1;
+        $intervals[] = "{$lowerBound} - {$upperBound}";
+        $classMarks[] = ($lowerBound + $upperBound) / 2; // Calculamos la marca de clase
+    }
+
+    // Contamos las frecuencias absolutas
+    foreach ($data as $value) {
+        for ($i = 0; $i < $numIntervals; $i++) {
+            $lowerBound = $min + ($i * $intervalSize);
+            $upperBound = $lowerBound + $intervalSize - 1;
+            if ($value >= $lowerBound && $value <= $upperBound) {
+                $frequencies[$i]++;
+                break;
+            }
+        }
+    }
+
+    // Calculamos las frecuencias acumuladas y relativas
+    $cumulativeFrequency = 0;
+    foreach ($frequencies as $key => $frequency) {
+        $cumulativeFrequency += $frequency;
+        $absoluteFrequencies[] = $frequency;
+        $cumulativeFrequencies[] = $cumulativeFrequency;
+        $relativeFrequencies[] = $frequency / count($data);
+        $cumulativeRelativeFrequencies[] = $cumulativeFrequency / count($data);
+    }
+
+    // Combinamos todos los datos en el formato esperado para la distribución de frecuencias
+    $frequencyDistribution = [];
+    for ($i = 0; $i < $numIntervals; $i++) {
+        $frequencyDistribution[] = [
+            'interval' => $intervals[$i],
+            'classMark' => $classMarks[$i],
+            'absoluteFrequency' => $absoluteFrequencies[$i],
+            'cumulativeFrequency' => $cumulativeFrequencies[$i],
+            'relativeFrequency' => $relativeFrequencies[$i],
+            'cumulativeRelativeFrequency' => $cumulativeRelativeFrequencies[$i],
+        ];
+    }
+
+    return $frequencyDistribution;
+}
+private function calculateMean($frequencyDistribution)
+{
+    $sum = 0;
+    $totalFrequency = 0;
+
+    foreach ($frequencyDistribution as $distribution) {
+        $sum += $distribution['classMark'] * $distribution['absoluteFrequency'];
+        $totalFrequency += $distribution['absoluteFrequency'];
+    }
+
+    return $sum / $totalFrequency;
+}
+
+private function calculateMedian($frequencyDistribution, $totalCount)
+{
+    // Encontrar la posición de la mediana
+    $middlePosition = ($totalCount) / 2;
+
+    $cumulativeFrequency = 0;
+    foreach ($frequencyDistribution as $distribution) {
+        $cumulativeFrequency += $distribution['absoluteFrequency'];
+        if ($cumulativeFrequency >= $middlePosition) {
+            return $distribution['interval'][0] + (($middlePosition - ($cumulativeFrequency - $distribution['absoluteFrequency'])) / $distribution['absoluteFrequency']) * ($distribution['interval'][1] - $distribution['interval'][0]);
+        }
+    }
+
+    return null; // En caso de no encontrar una mediana válida
+}
+
+private function calculateMode($frequencyDistribution)
+{
+    // Encontrar la clase con la frecuencia absoluta máxima
+    $maxFrequency = max(array_column($frequencyDistribution, 'absoluteFrequency'));
+    $modalClass = null;
+
+    foreach ($frequencyDistribution as $distribution) {
+        if ($distribution['absoluteFrequency'] == $maxFrequency) {
+            $modalClass = $distribution;
+            break; // Encontramos la primera clase modal, salimos del bucle
+        }
+    }
+
+    // Si encontramos la clase modal, calculamos la moda utilizando la fórmula de la clase modal
+    if ($modalClass) {
+        // Extraer límites y frecuencias necesarias
+        $lowerBound = intval($modalClass['interval'][0]);
+        $upperBound = intval($modalClass['interval'][1]);
+        $modalFrequency = $modalClass['absoluteFrequency'];
+
+        // Calcular la moda utilizando la fórmula específica para datos agrupados
+        $classSize = $upperBound - $lowerBound + 1;
+        $previousFrequency = ($modalClass === $frequencyDistribution[0]) ? 0 : $frequencyDistribution[array_search($modalClass, $frequencyDistribution) - 1]['absoluteFrequency'];
+        $nextFrequency = ($modalClass === end($frequencyDistribution)) ? 0 : $frequencyDistribution[array_search($modalClass, $frequencyDistribution) + 1]['absoluteFrequency'];
+
+        $modal = $lowerBound + (($modalFrequency - $previousFrequency) / (2 * $modalFrequency - $previousFrequency - $nextFrequency)) * $classSize;
+
+        return $modal;
+    }
+
+    return null; // En caso de no encontrar una moda válida
+}
+
+
+private function calculateVariance($frequencyDistribution, $mean)
+{
+    $sum = 0;
+    $totalFrequency = 0;
+
+    foreach ($frequencyDistribution as $distribution) {
+        $sum += pow($distribution['classMark'] - $mean, 2) * $distribution['absoluteFrequency'];
+        $totalFrequency += $distribution['absoluteFrequency'];
+    }
+
+    return $sum / $totalFrequency;
+}
+
+private function calculateMeanDeviation($frequencyDistribution, $mean)
+{
+    $sum = 0;
+    $totalFrequency = 0;
+
+    foreach ($frequencyDistribution as $distribution) {
+        $sum += abs($distribution['classMark'] - $mean) * $distribution['absoluteFrequency'];
+        $totalFrequency += $distribution['absoluteFrequency'];
+    }
+
+    return $sum / $totalFrequency;
+}
+
+private function calculateStdDeviation($variance)
+{
+    return sqrt($variance);
+}
 }
