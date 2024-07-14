@@ -85,32 +85,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Accordion Item #3
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            a
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                            Accordion Item #4
-                        </button>
-                    </h2>
-                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            a
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
 
@@ -129,10 +104,10 @@
                             @csrf
                             <h2>Calculadora de media</h2>
                             <label for="datos">Ingresa los datos a calcular separados por una coma ","</label>
-                            <input type="text" name="datos" id="">
-                            <button type="submit">Calcular</button>
+                            <input type="text" name="datos" id="" class=" form-control mb-4">
+                            <button type="submit" class=" btn btn-danger">Calcular</button>
                             <label for="">Resultado</label>
-                            <input type="text" name="" id="" value="{{ $promedio }}">
+                            <input type="text" name="" id="" value="{{ $promedio }}" class=" form-control">
                         </form>
                     </div>
                 </div>
@@ -147,10 +122,10 @@
                             @csrf
                             <h2>Calculadora de mediana</h2>
                             <label for="datos">Ingresa los datos a calcular separados por una coma ","</label>
-                            <input type="text" name="datos" id="">
-                            <button type="submit">Calcular</button>
+                            <input type="text" name="datos" id="" class=" form-control mb-4">
+                            <button type="submit" class=" btn btn-danger">Calcular</button>
                             <label for="">Resultado</label>
-                            <input type="text" name="" id="" value="{{ $mediana }}">
+                            <input type="text" name="" id="" value="{{ $mediana }}" class=" form-control">
                         </form>
                     </div>
                 </div>
@@ -165,10 +140,10 @@
                             @csrf
                             <h2>Calculadora de Moda</h2>
                             <label for="datos">Ingresa los datos a calcular separados por una coma ","</label>
-                            <input type="text" name="datos" id="">
-                            <button type="submit">Calcular</button>
+                            <input type="text" name="datos" id="" class=" form-control mb-4">
+                            <button type="submit" class=" btn btn-danger">Calcular</button>
                             <label for="">Resultado</label>
-                            <input type="text" name="" id="" value="{{ $moda }}">
+                            <input type="text" name="" id="" value="{{ $moda }}" class=" form-control">
                         </form>
                     </div>
                 </div>

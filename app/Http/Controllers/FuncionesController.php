@@ -264,8 +264,8 @@ public function showFrequencyDistribution(Request $request)
     // Llamamos a la función para calcular la distribución de frecuencias
     $frequencyDistribution = $this->calculateFrequencyDistribution($data);
     $media = $this->calculateMean($frequencyDistribution);
-    $mediana = $this->calculateMedian($frequencyDistribution, count($data));
-    $moda = $this->calculateMode($frequencyDistribution);
+    $mediana = $this->media2($datos);
+    $moda = $this->moda2($datos);
     $varianza = $this->calculateVariance($frequencyDistribution, $media);
     $desviacionM = $this->calculateMeanDeviation($frequencyDistribution, $media);
     $estandarD = $this->calculateStdDeviation($varianza);
@@ -437,5 +437,143 @@ private function calculateMeanDeviation($frequencyDistribution, $mean)
 private function calculateStdDeviation($variance)
 {
     return sqrt($variance);
+}
+
+
+private function media2($datos) {
+    // Paso 1: Parsear la cadena de datos
+    $dataString = $datos;
+    $dataArray = array_map('intval', explode(',', $dataString));
+
+    // Paso 2: Ordenar los datos
+    sort($dataArray);
+
+    // Paso 3: Calcular el rango y la amplitud
+    $minValue = min($dataArray);
+    $maxValue = max($dataArray);
+    $range = $maxValue - $minValue;
+
+    $numClasses = 5;
+    $classWidth = ceil($range / $numClasses);
+
+    // Paso 4: Crear la tabla de distribución de frecuencias
+    $frequencyTable = [];
+    for ($i = 0; $i < $numClasses; $i++) {
+        $lowerBound = $minValue + ($i * $classWidth);
+        $upperBound = $lowerBound + $classWidth - 1;
+        $frequencyTable[] = [
+            'lowerBound' => $lowerBound,
+            'upperBound' => $upperBound,
+            'frequency' => 0,
+            'accumulatedFrequency' => 0,
+        ];
+    }
+
+    // Llenar la tabla de frecuencias
+    foreach ($dataArray as $value) {
+        foreach ($frequencyTable as &$class) {
+            if ($value >= $class['lowerBound'] && $value <= $class['upperBound']) {
+                $class['frequency']++;
+                break;
+            }
+        }
+    }
+
+    // Calcular la frecuencia acumulada
+    $accumulatedFrequency = 0;
+    foreach ($frequencyTable as &$class) {
+        $accumulatedFrequency += $class['frequency'];
+        $class['accumulatedFrequency'] = $accumulatedFrequency;
+    }
+
+    // Calcular la mediana
+    $N = count($dataArray);
+    $target = $N / 2;
+
+    $accumulatedFrequency = 0;
+    $median = null;
+
+    foreach ($frequencyTable as $class) {
+        $accumulatedFrequency += $class['frequency'];
+
+        if ($accumulatedFrequency >= $target) {
+            $median = $class['lowerBound'] + (($target - ($accumulatedFrequency - $class['frequency'])) / $class['frequency']) * $classWidth;
+            break;
+        }
+    }
+
+    // Si no se encontró la mediana por alguna razón, tomar el último valor de la clase
+    if (is_null($median)) {
+        $lastClass = end($frequencyTable);
+        $median = $lastClass['upperBound'];
+    }
+
+    return $median;
+}
+
+
+public  function  moda2($datos) {
+    // Paso 1: Parsear la cadena de datos
+    $dataString = $datos;
+    $dataArray = array_map('intval', explode(',', $dataString));
+
+    // Paso 2: Ordenar los datos
+    sort($dataArray);
+
+    // Paso 3: Calcular el rango y la amplitud
+    $minValue = min($dataArray);
+    $maxValue = max($dataArray);
+    $range = $maxValue - $minValue;
+
+    $numClasses = 5;
+    $classWidth = ceil($range / $numClasses);
+
+    // Paso 4: Crear la tabla de distribución de frecuencias
+    $frequencyTable = [];
+    for ($i = 0; $i < $numClasses; $i++) {
+        $lowerBound = $minValue + ($i * $classWidth);
+        $upperBound = $lowerBound + $classWidth - 1;
+        $frequencyTable[] = [
+            'lowerBound' => $lowerBound,
+            'upperBound' => $upperBound,
+            'frequency' => 0,
+        ];
+    }
+
+    // Llenar la tabla de frecuencias
+    foreach ($dataArray as $value) {
+        foreach ($frequencyTable as &$class) {
+            if ($value >= $class['lowerBound'] && $value <= $class['upperBound']) {
+                $class['frequency']++;
+                break;
+            }
+        }
+    }
+
+    // Paso 5: Calcular la moda de los datos agrupados
+    $mode = null;
+    $maxFrequency = 0;
+    $modalClassIndex = 0;
+
+    // Encontrar la clase modal (con mayor frecuencia)
+    foreach ($frequencyTable as $index => $class) {
+        if ($class['frequency'] > $maxFrequency) {
+            $maxFrequency = $class['frequency'];
+            $modalClassIndex = $index;
+        }
+    }
+
+    if ($maxFrequency > 0) {
+        $modalClass = $frequencyTable[$modalClassIndex];
+        $L = $modalClass['lowerBound'];
+        $f_m = $modalClass['frequency'];
+        $f_1 = $modalClassIndex > 0 ? $frequencyTable[$modalClassIndex - 1]['frequency'] : 0;
+        $f_2 = $modalClassIndex < count($frequencyTable) - 1 ? $frequencyTable[$modalClassIndex + 1]['frequency'] : 0;
+        $w = $classWidth;
+
+        $mode = $L + (($f_m - $f_1) / (2 * $f_m - $f_1 - $f_2)) * $w;
+    }
+
+    return $mode;
 }
 }
