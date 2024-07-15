@@ -8,7 +8,7 @@ Route::get('/', function () {
 
 
 Route::get('/list', function () {
-    return view('list');
+    return view('layouts.app');
 });
 
 Route::get('/medididas-de-tendencia-central/media', function () {
@@ -94,3 +94,12 @@ Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function
 
 Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'tablafrecuencia'])->name('tabla1');
 Route::post('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'showFrequencyDistribution'])->name('showFrequencyDistribution');
+
+Route::get('/Medidas-de-posicion/cuartiles', function(){
+    $result = "";
+    $data = "";
+    $position = "";
+    return view('MedidasPosicion')->with('result',$result)->with('data',$data)->with('position',$position);
+});
+
+Route::post('/Medidas-de-posicion/cuartiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateQuartile'])->name('Quartile');
