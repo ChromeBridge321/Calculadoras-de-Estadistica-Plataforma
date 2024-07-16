@@ -112,3 +112,12 @@ Route::get('/Medidas-de-posicion/deciles', function(){
 });
 
 Route::post('/Medidas-de-posicion/deciles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateDecile'])->name('Decile');
+
+Route::get('/Medidas-de-posicion/percentiles', function(){
+    $result = "";
+    $data = "";
+    $position = "";
+    return view('Percentiles')->with('result',$result)->with('data',$data)->with('position',$position);
+});
+
+Route::post('/Medidas-de-posicion/percentiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePercentile'])->name('Percentile');

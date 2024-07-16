@@ -105,7 +105,7 @@
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Deciles</a>
                             </div>
                             <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('') }}"
+                                <a href="{{ url('/Medidas-de-posicion/percentiles') }}"
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Percentiles</a>
                             </div>
                         </div>

@@ -11,13 +11,92 @@ class FunctionsController extends Controller
     public function CalculateQuartile(Request $request)
     {
         try {
-            $numberString = $request->input('data'); //obtine los datos enviados desde la vista y los guarda en una variable
-            $quartileNumber = $request->quartile; //obtine el numero de cuartil a calcular enviado desde la vista
+            $array = $this->calculate($request->input('data'), $request->number, $request->input('operation'));
+            $result = $array[0];
+            $data = $array[1];
+            $position = $array[2];
+
+            return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
+        } catch (\Throwable $th) {
+            $result = "";
+            $data = "";
+            $position = "";
+            return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
+        }
+    }
+
+
+
+    public function CalculateDecile(Request $request)
+    {
+        try {
+            $array = $this->calculate($request->input('data'), $request->number, $request->input('operation'));
+            $result = $array[0];
+            $data = $array[1];
+            $position = $array[2];
+
+            return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
+        } catch (\Throwable $th) {
+            $result = "";
+            $data = "";
+            $position = "";
+            return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
+        }
+    }
+
+    public function CalculatePercentile(Request $request)
+    {
+        try {
+            $array = $this->calculate($request->input('data'), $request->number, $request->input('operation'));
+            $result = $array[0];
+            $data = $array[1];
+            $position = $array[2];
+
+            return view('Percentiles')->with('result', $result)->with('data', $data)->with('position', $position);
+        } catch (\Throwable $th) {
+            $result = "";
+            $data = "";
+            $position = "";
+            return view('Percentiles')->with('result', $result)->with('data', $data)->with('position', $position);
+        }
+    }
+
+    private function calculate($string, $number, $operation)
+    {
+        try {
+            $numberString = $string; //obtine los datos enviados desde la vista y los guarda en una variable
+
+            if ($operation == 1) {
+                $quartileNumber = $number; //obtine el numero de cuartil a calcular enviado desde la vista
+            }
+
+            if ($operation == 2) {
+                $decileNumber = $number; //obtine el numero de cuartil a calcular enviado desde la vista
+            }
+
+
+            if ($operation == 3) {
+                $percentileNumber = $number; //obtine el numero de cuartil a calcular enviado desde la vista
+            }
+
+
             $numbersArray = explode(',', $numberString); //combierte la cadena enviada de la vista en un array de numeros
             $n = count($numbersArray); //cuenta el numero de datos que hay dentro del array
-            $operation = ($quartileNumber * ($n + 1)) / 4; //aplica la operacion del cuartil para encontrar la posicion
+
+            if ($operation == 1) {
+                $operation = ($quartileNumber * ($n + 1)) / 4; //aplica la operacion del cuartil para encontrar la posicion
+            }
+
+            if ($operation == 2) {
+                $operation = ($decileNumber * ($n + 1)) / 10; //aplica la operacion del decil para encontrar la posicion
+            }
+
+            if ($operation == 3) {
+                $operation = ($percentileNumber * ($n + 1)) / 100; //aplica la operacion del percentil para encontrar la posicion
+            }
+
             sort($numbersArray); //ordena de menos a mayor los datos contenidos en el array
-            $position = $this->PoU($operation); //aplica la duncion privada llamada PoU
+            $position = $this->PoU($operation); //aplica la funcion privada llamada PoU
 
 
 
@@ -29,18 +108,11 @@ class FunctionsController extends Controller
             } else { // si la posicion no contiene .5 se aplica lo siguiente
                 $result = $numbersArray[$position - 1]; // la posicion del valor es igual al valor de la posicion en el array menos 1
             }
-            $numbersArray = implode(',', $numbersArray); // se convierte el array a una cadena
+            $numbersArray = implode(',  ', $numbersArray); // se convierte el array a una cadena
 
-
-            return view('Cuartiles') // se devuleven los valores junto con la vista
-                ->with('result', $result)
-                ->with('data', $numbersArray)
-                ->with('position', $operation);
+            $array = [$result, $numbersArray, $position]; // guerda las operaciones realizadas dentro de un array y lo retorna
+            return $array;
         } catch (\Throwable $th) {
-            $result = "";
-            $data = "";
-            $position = "";
-            return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
         }
     }
 
@@ -65,42 +137,4 @@ class FunctionsController extends Controller
 
         return $data; //devuelve el valor segun sea el caso  aplicado
     }
-
-    public function CalculateDecile(Request $request){
-        try {
-            $numberString = $request->input('data'); //obtine los datos enviados desde la vista y los guarda en una variable
-            $decileNumber = $request->decile; //obtine el numero de cuartil a calcular enviado desde la vista
-            $numbersArray = explode(',', $numberString); //combierte la cadena enviada de la vista en un array de numeros
-            $n = count($numbersArray); //cuenta el numero de datos que hay dentro del array
-            $operation = ($decileNumber * ($n + 1)) / 10; //aplica la operacion del cuartil para encontrar la posicion
-            sort($numbersArray); //ordena de menos a mayor los datos contenidos en el array
-            $position = $this->PoU($operation); //aplica la funcion privada llamada PoU
-
-
-
-            if (($position - (floor($position))) == 0.5) { //si la posicion contiene el .5 en su decimal entonces se aplica el id
-                $p1 = floor($position) - 1; //encuentra el valor de la posicion 1 restandole 1 debido a la naturaleza de un array
-                $p2 = ($position + 0.5) - 1; // encuentra la posicion 2 restando 1
-                $result = ($numbersArray[$p1] + $numbersArray[$p2]) / 2; //se obtiene el valor medio entre ambas posiciones
-                //sumandolas y dividiendola entre 2
-            } else { // si la posicion no contiene .5 se aplica lo siguiente
-                $result = $numbersArray[$position - 1]; // la posicion del valor es igual al valor de la posicion en el array menos 1
-            }
-            $numbersArray = implode(',', $numbersArray); // se convierte el array a una cadena
-
-
-            return view('Deciles') // se devuleven los valores junto con la vista
-                ->with('result', $result)
-                ->with('data', $numbersArray)
-                ->with('position', $operation);
-        } catch (\Throwable $th) {
-            $result = "";
-            $data = "";
-            $position = "";
-            return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
-        }
-    }
 }
-
-
-

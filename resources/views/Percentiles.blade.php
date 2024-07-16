@@ -27,38 +27,37 @@
 @section('Content')
     <div class="ps-5 container pt-4">
         <div class=" row">
-            <form action="{{ route('Decile') }}" method="post" class=" col-12" id="myForm">
+            <form action="{{ route('Percentile') }}" method="post" class=" col-12" id="myForm">
                 @csrf
 
                 <div class=" row">
                     <div class=" col-12">
-                        <h2>Calculadora de Deciles</h2>
+                        <h2>Calculadora de Percentiles</h2>
                     </div>
 
 
                     <div class=" col-7">
                         <label for="" class=" form-label">Porfavor separe los numeros mediate una coma ","</label>
-                        <input type="text" name="data" id="data" class=" form-control w-100" oninput="validarInput(event)">
-                        <input type="text" name="operation" value="2" class=" d-none" oninput="validarInput(event)">
+                        <input type="text" name="operation" id="" value="3" class=" d-none"">
+                        <textarea name="data" cols="10" rows="5" class=" form-control" oninput oninput="validarInput(event)"></textarea>
                     </div>
 
                     <div class=" col-3">
-                        <label for="" class=" form-label">Numero de decil</label>
+                        <label for="" class=" form-label">Numero de percentil</label>
                         <select name="number" id="" class=" form-select">
-                            @for ($i = 1; $i < 10; $i++)
-                            <option value="{{$i}}">{{$i}}</option>
+                            @for ($i = 1; $i < 100; $i++)
+                                <option value="{{ $i }}">{{ $i }}</option>
                             @endfor
                         </select>
-                    </div>
 
-                    <div class=" col-2 d-flex align-items-end">
-                        <button type="submit" class=" btn btn-danger w-75">Calcular</button>
+                        <div class=" w-100 d-flex justify-content-center pt-3">
+                            <button type="submit" class=" btn btn-danger w-100">Calcular</button>
+                        </div>
                     </div>
 
                     <div class=" col-7 pt-2">
                         <label for="">Cadena acomodada</label>
-                        <input type="text" name="" id="" value="{{ $data }}"
-                            class=" form-control w-100">
+                        <textarea  id="" cols="10" rows="7" class=" form-control">{{$data}}</textarea>
                     </div>
 
                     <div class=" col-7 pt-2">
@@ -75,8 +74,11 @@
                 </div>
             </form>
         </div>
+
         <div class=" col-12 pt-3">
-            <h5>Para obtener un mejor resultado es recomendable ingresar al menos 10 datos</h5>
+            <h5>Para obtener un mejor resultado es recomendable ingresar al menos 100 datos</h5>
         </div>
     </div>
+
+
 @endsection
