@@ -99,7 +99,16 @@ Route::get('/Medidas-de-posicion/cuartiles', function(){
     $result = "";
     $data = "";
     $position = "";
-    return view('MedidasPosicion')->with('result',$result)->with('data',$data)->with('position',$position);
+    return view('Cuartiles')->with('result',$result)->with('data',$data)->with('position',$position);
 });
 
 Route::post('/Medidas-de-posicion/cuartiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateQuartile'])->name('Quartile');
+
+Route::get('/Medidas-de-posicion/deciles', function(){
+    $result = "";
+    $data = "";
+    $position = "";
+    return view('Deciles')->with('result',$result)->with('data',$data)->with('position',$position);
+});
+
+Route::post('/Medidas-de-posicion/deciles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateDecile'])->name('Decile');
