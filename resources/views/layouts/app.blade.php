@@ -19,8 +19,8 @@
         <div class="container-fluid">
             <div class="row">
                 <div class=" col-6">
-                    <img src="{{ asset('images/logo.png') }}" alt="" class=" img-fluid"
-                        style="width: 60px; height: 60px;">
+                    <a href="{{ url('/') }}"> <img src="{{ asset('images/logo.png') }}" alt=""
+                            class=" img-fluid" style="width: 60px; height: 60px;"></a>
                 </div>
 
                 <div class=" col-6 d-flex justify-content-end align-items-center text-white pe-4">
@@ -124,7 +124,7 @@
                     <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
                             <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('') }}"
+                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-Fisher') }}"
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Asimetria
                                     de Fisher
                                 </a>
@@ -156,7 +156,6 @@
         </div>
         @yield('Content')
     </div>
-
 </body>
 
 </html>

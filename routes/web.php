@@ -121,3 +121,11 @@ Route::get('/Medidas-de-posicion/percentiles', function(){
 });
 
 Route::post('/Medidas-de-posicion/percentiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePercentile'])->name('Percentile');
+
+Route::get('/Calculadoras-extras/Coeficiente-de-Fisher', function(){
+    $result = ["","",""];
+    return view('CoeficienteFisher')->with('result',$result);
+    
+});
+
+Route::post('/Calculadoras-extras/Coeficiente-de-Fisher/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateFisher'])->name('Fisher');

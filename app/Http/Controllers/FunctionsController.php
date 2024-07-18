@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\For_;
 use PhpParser\Node\Stmt\TryCatch;
 
 class FunctionsController extends Controller
@@ -136,5 +137,61 @@ class FunctionsController extends Controller
         }
 
         return $data; //devuelve el valor segun sea el caso  aplicado
+    }
+
+
+    public function CalculateFisher(Request $request)
+    {
+
+        $numberString = $request->input('data');
+        $numbersArray = explode(',', $numberString);
+        $n = count($numbersArray);
+        $median = array_sum($numbersArray) / $n;
+        sort($numbersArray);
+
+        $variance = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $variance += pow(($numbersArray[$i] - $median), 2);
+        }
+        $variance = $variance / ($n - 1);
+
+        $sDesviation = sqrt($variance);
+
+
+        $sum = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $sum += pow(($numbersArray[$i] - $median), 3);
+        }
+
+        $result = ((1 / $n) * ($sum)) / pow($sDesviation, 3);
+
+
+        if ($result == 0) {
+            $fisher = ["Simétrica", "$result", "1"];
+            
+        } elseif ($result > 0 && $result < 0.5) {
+            $fisher = ["Asimetría Positiva Leve", "$result", "2"];
+            
+        } elseif ($result >= 0.5 && $result < 1) {
+            $fisher = ["Asimetría Positiva Moderada", "$result", "2"];
+            
+        } elseif ($result >= 1) {
+            $fisher = ["Asimetría Positiva Alta", "$result", "2"];
+            
+        } elseif ($result < 0 && $result > -0.5) {
+            $fisher = ["Asimetría Negativa Leve", "$result", "3"];
+            
+        } elseif ($result <= -0.5 && $result > -1) {
+            $fisher = ["Asimetría Negativa Moderada", "$result", "3"];
+            
+        } elseif ($result <= -1) {
+            $fisher = ["Asimetría Negativa Alta", "$result", "3"];
+            
+        } else {
+            $fisher = ["Valor de γ fuera del rango esperado", "$result", "0"];
+        }
+
+
+        return view('CoeficienteFisher')->with('result', $fisher);
     }
 }
