@@ -13,9 +13,12 @@
     
     
         <div class=" row">
+            <div class=" col-12">
+            <h3>Porfavor separe los datos por una coma ","</h3>
+            </div>
             <div class=" col-9">
                 <label for="" class=" form-label">Datos</label>
-                <input type="" name="datos" id="" class=" form-control">
+                <input type="" name="datos" id="" class=" form-control" oninput="validarInput(event)">
             </div>
             <div class=" col-3 d-flex align-items-end">
                 <button type="submit" class=" btn btn-danger w-100">Calcular</button>
@@ -129,9 +132,12 @@
     
     
     <div class=" row">
+        <div class=" col-12">
+            <h3>Porfavor separe los datos por una coma ","</h3>
+            </div>
      <div class=" col-9">
          <label for="" class=" form-label">Datos</label>
-         <input type="" name="datos" id="" class=" form-control">
+         <input type="" name="datos" id="" class=" form-control" oninput="validarInput(event)">
      </div>
      <div class=" col-3 d-flex align-items-end">
          <button type="submit" class=" btn btn-danger w-100">Calcular</button>

@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('Content')
     <div class=" container pt-4 ps-5">
         <div class=" row">
@@ -11,7 +10,7 @@
                 @csrf
                 <div class=" col-10">
                     <label for="data" class=" form-label">Porfavor ingrese los datos separados por una coma ","</label>
-                    <input type="text" name="data" id="data" class=" form-control">
+                    <input type="text" name="data" id="data" class=" form-control" oninput="validarInput(event)">
                 </div>
 
                 <div class=" col d-flex align-items-end justify-content-center">

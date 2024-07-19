@@ -13,7 +13,31 @@
     <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
     <title>Document</title>
 </head>
+<script>
+    function validarInput(event) {
+        const input = event.target;
+        const valor = input.value;
+        const ultimoCaracter = valor[valor.length - 1];
 
+        // Permitir solo números y comas
+        if (!/^[0-9,]*$/.test(valor)) {
+            input.value = valor.slice(0, -1);
+            return;
+        }
+
+        // No permitir dos comas seguidas
+        if (valor.includes(",,")) {
+            input.value = valor.replace(",,", ",");
+            return;
+        }
+
+        // No permitir que el primer caracter sea una coma
+        if (valor.startsWith(",")) {
+            input.value = valor.slice(1);
+            return;
+        }
+    }
+</script>
 <body>
     <nav class=" pt-2 pb-2 " style="background-color: #DE1141;">
         <div class="container-fluid">

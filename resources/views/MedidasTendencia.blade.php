@@ -14,7 +14,7 @@
                     @csrf
                     <h2>Calculadora de media</h2>
                     <label for="datos">Ingresa los datos a calcular separados por una coma ","</label>
-                    <input type="text" name="datos" id="" class=" form-control mb-4">
+                    <input type="text" name="datos" id="" class=" form-control mb-4" oninput="validarInput(event)">
                     <button type="submit" class=" btn btn-danger">Calcular</button>
                     <label for="">Resultado</label>
                     <input type="text" name="" id="" value="{{ $promedio }}" class=" form-control">
@@ -32,7 +32,7 @@
                     @csrf
                     <h2>Calculadora de mediana</h2>
                     <label for="datos">Ingresa los datos a calcular separados por una coma ","</label>
-                    <input type="text" name="datos" id="" class=" form-control mb-4">
+                    <input type="text" name="datos" id="" class=" form-control mb-4" oninput="validarInput(event)">
                     <button type="submit" class=" btn btn-danger">Calcular</button>
                     <label for="">Resultado</label>
                     <input type="text" name="" id="" value="{{ $mediana }}" class=" form-control">
@@ -50,7 +50,7 @@
                     @csrf
                     <h2>Calculadora de Moda</h2>
                     <label for="datos">Ingresa los datos a calcular separados por una coma ","</label>
-                    <input type="text" name="datos" id="" class=" form-control mb-4">
+                    <input type="text" name="datos" id="" class=" form-control mb-4" oninput="validarInput(event)">
                     <button type="submit" class=" btn btn-danger">Calcular</button>
                     <label for="">Resultado</label>
                     <input type="text" name="" id="" value="{{ $moda }}" class=" form-control">
@@ -76,7 +76,7 @@
                 <div class="ps-3 pe-3">
                     <label for="" class=" form-label">Tamaño de poblacion</label>
                     <input type="number" name="poblacion" id="" placeholder="N"
-                        class=" form-control text-center">
+                        class=" form-control text-center" >
                 </div>
 
                 <h3 class=" ps-3 pe-3">*</h3>
