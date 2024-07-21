@@ -9,7 +9,7 @@
             <form action="{{ route('Fisher') }}" method="post" class=" row">
                 @csrf
                 <div class=" col-10">
-                    <label for="data" class=" form-label">Porfavor ingrese los datos separados por una coma ","</label>
+                    <label for="data" class=" form-label">Por favor ingrese los datos separados por una coma ","</label>
                     <input type="text" name="data" id="data" class=" form-control" oninput="validarInput(event)">
                 </div>
 

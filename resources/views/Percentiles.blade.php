@@ -12,7 +12,7 @@
 
 
                     <div class=" col-7">
-                        <label for="" class=" form-label">Porfavor separe los numeros mediate una coma ","</label>
+                        <label for="" class=" form-label">Por favor separe los numeros mediate una coma ","</label>
                         <input type="text" name="operation" id="" value="3" class=" d-none"">
                         <textarea name="data" cols="10" rows="5" class=" form-control" oninput="validarInput(event)"></textarea>
                     </div>

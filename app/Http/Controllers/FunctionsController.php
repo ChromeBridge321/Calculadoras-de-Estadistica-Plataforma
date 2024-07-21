@@ -85,19 +85,19 @@ class FunctionsController extends Controller
             $n = count($numbersArray); //cuenta el numero de datos que hay dentro del array
 
             if ($operation == 1) {
-                $operation = ($quartileNumber * ($n + 1)) / 4; //aplica la operacion del cuartil para encontrar la posicion
+                $OP = ($quartileNumber * ($n + 1)) / 4; //aplica la operacion del cuartil para encontrar la posicion
             }
 
             if ($operation == 2) {
-                $operation = ($decileNumber * ($n + 1)) / 10; //aplica la operacion del decil para encontrar la posicion
+                $OP = ($decileNumber * ($n + 1)) / 10; //aplica la operacion del decil para encontrar la posicion
             }
 
             if ($operation == 3) {
-                $operation = ($percentileNumber * ($n + 1)) / 100; //aplica la operacion del percentil para encontrar la posicion
+                $OP = ($percentileNumber * ($n + 1)) / 100; //aplica la operacion del percentil para encontrar la posicion
             }
 
             sort($numbersArray); //ordena de menos a mayor los datos contenidos en el array
-            $position = $this->PoU($operation); //aplica la funcion privada llamada PoU
+            $position = $this->PoU($OP); //aplica la funcion privada llamada PoU
 
 
 
@@ -168,30 +168,65 @@ class FunctionsController extends Controller
 
         if ($result == 0) {
             $fisher = ["Simétrica", "$result", "1"];
-            
         } elseif ($result > 0 && $result < 0.5) {
             $fisher = ["Asimetría Positiva Leve", "$result", "2"];
-            
         } elseif ($result >= 0.5 && $result < 1) {
             $fisher = ["Asimetría Positiva Moderada", "$result", "2"];
-            
         } elseif ($result >= 1) {
             $fisher = ["Asimetría Positiva Alta", "$result", "2"];
-            
         } elseif ($result < 0 && $result > -0.5) {
             $fisher = ["Asimetría Negativa Leve", "$result", "3"];
-            
         } elseif ($result <= -0.5 && $result > -1) {
             $fisher = ["Asimetría Negativa Moderada", "$result", "3"];
-            
         } elseif ($result <= -1) {
             $fisher = ["Asimetría Negativa Alta", "$result", "3"];
-            
         } else {
             $fisher = ["Valor de γ fuera del rango esperado", "$result", "0"];
         }
 
 
         return view('CoeficienteFisher')->with('result', $fisher);
+    }
+
+    public function CalculatePareto()
+    {
+        // Datos de ejemplo: frecuencias de problemas
+        $data = [205, 195, 185, 165, 150, 120, 115, 110, 105, 95, 85, 75, 65, 50, 20, 15, 10, 5,];
+        $labels = ['Problema A', 'Problema B', 'Problema C', 'Problema D', 'Problema E', 'Problema A', 'Problema B', 'Problema C', 'Problema D', 'Problema E', 'Problema A', 'Problema B', 'Problema C', 'Problema D', 'Problema E'];
+
+        // Ordenar los datos de mayor a menor (ya están ordenados en este ejemplo)
+        // Calcular el porcentaje acumulado
+        $total = array_sum($data);
+        $cumulative = [];
+        $sum = 0;
+
+        foreach ($data as $value) {
+            $sum += $value;
+            $cumulative[] = round(($sum / $total) * 100, 2);
+        }
+
+        return view('pareto', compact('labels', 'data', 'cumulative'));
+    }
+
+
+    public function CalculateBowley(Request $request)
+    {
+
+        try {
+            $array1 = $this->calculate($request->input('data'), 1, 1);
+            $array2 = $this->calculate($request->input('data'), 2, 1);
+            $array3 = $this->calculate($request->input('data'), 3, 1);
+            $Q1 = $array1[0];
+            $Q2 = $array2[0];
+            $Q3 = $array3[0];
+
+            $result = (($Q3 - $Q2) - ($Q2 - $Q1)) / ($Q3 - $Q1);
+
+            return view('CoeficienteBowley')->with('result', $result);
+            
+        } catch (\Throwable $th) {
+            $result = "";
+            return view('CoeficienteBowley')->with('result', $result);
+        }
     }
 }

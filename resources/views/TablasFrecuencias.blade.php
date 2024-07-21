@@ -14,7 +14,7 @@
     
         <div class=" row">
             <div class=" col-12">
-            <h3>Porfavor separe los datos por una coma ","</h3>
+            <h3>Por favor separe los datos por una coma ","</h3>
             </div>
             <div class=" col-9">
                 <label for="" class=" form-label">Datos</label>
@@ -133,7 +133,7 @@
     
     <div class=" row">
         <div class=" col-12">
-            <h3>Porfavor separe los datos por una coma ","</h3>
+            <h3>Por favor separe los datos por una coma ","</h3>
             </div>
      <div class=" col-9">
          <label for="" class=" form-label">Datos</label>

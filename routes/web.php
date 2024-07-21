@@ -13,46 +13,46 @@ Route::get('/list', function () {
 
 Route::get('/medididas-de-tendencia-central/media', function () {
     $promedio = 0;
-    $mediana=0;
+    $mediana = 0;
     $operacion = 1;
     $moda = 0;
     $muestra = 0;
     return view('MedidasTendencia')->with('mediana', $mediana)->with('promedio', $promedio)
-    ->with('operacion', $operacion)->with('moda',$moda)
-    ->with('muestra', $muestra);
+        ->with('operacion', $operacion)->with('moda', $moda)
+        ->with('muestra', $muestra);
 });
 Route::get('/medididas-de-tendencia-central/mediana', function () {
     $mediana = 0;
     $operacion = 2;
-    $promedio =0;
-    $moda=0;
+    $promedio = 0;
+    $moda = 0;
     $muestra = 0;
     return view('MedidasTendencia')->with('mediana', $mediana)->with('promedio', $promedio)
-    ->with('operacion', $operacion)->with('moda',$moda)
-    ->with('muestra', $muestra);
+        ->with('operacion', $operacion)->with('moda', $moda)
+        ->with('muestra', $muestra);
 });
 
 Route::get('/medididas-de-tendencia-central/moda', function () {
     $mediana = 0;
     $operacion = 3;
-    $promedio =0;
-    $moda=0;
+    $promedio = 0;
+    $moda = 0;
     $muestra = 0;
     return view('MedidasTendencia')->with('mediana', $mediana)->with('promedio', $promedio)
-    ->with('operacion', $operacion)->with('moda',$moda)
-    ->with('muestra', $muestra);
+        ->with('operacion', $operacion)->with('moda', $moda)
+        ->with('muestra', $muestra);
 });
 
 
 Route::get('/medididas-de-tendencia-central/muestra', function () {
     $mediana = 0;
     $operacion = 4;
-    $promedio =0;
-    $moda=0;
+    $promedio = 0;
+    $moda = 0;
     $muestra = 0;
     return view('MedidasTendencia')->with('mediana', $mediana)->with('promedio', $promedio)
-    ->with('operacion', $operacion)->with('moda',$moda)
-    ->with('muestra', $muestra);
+        ->with('operacion', $operacion)->with('moda', $moda)
+        ->with('muestra', $muestra);
 });
 
 
@@ -63,7 +63,7 @@ Route::post('/medididas-de-tendencia-central/mediana/resultado', [App\Http\Contr
 Route::post('/medididas-de-tendencia-central/moda/resultado', [App\Http\Controllers\FuncionesController::class, 'moda'])->name('moda');
 Route::post('/medididas-de-tendencia-central/muestra/resultado', [App\Http\Controllers\FuncionesController::class, 'muestra'])->name('muestra');
 
-Route::get('/tablas-de-distribucion-de-frecuencias/datos/agrupados', function(){
+Route::get('/tablas-de-distribucion-de-frecuencias/datos/agrupados', function () {
     $media = 0;
     $mediana = 0;
     $moda = 0;
@@ -71,12 +71,12 @@ Route::get('/tablas-de-distribucion-de-frecuencias/datos/agrupados', function(){
     $estandarD = 0;
     $desviacionM = 0;
     $operacion = 1;
-    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda)
-    ->with('varianza',$varianza)->with('estandarD',$estandarD)->with('desviacionM',$desviacionM)
-    ->with('operacion',$operacion);
+    return view('TablasFrecuencias')->with('media', $media)->with('mediana', $mediana)->with('moda', $moda)
+        ->with('varianza', $varianza)->with('estandarD', $estandarD)->with('desviacionM', $desviacionM)
+        ->with('operacion', $operacion);
 });
 
-Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function(){
+Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function () {
     $media = 0;
     $mediana = 0;
     $moda = 0;
@@ -85,9 +85,9 @@ Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function
     $desviacionM = 0;
     $operacion = 2;
     $frequencyDistribution[0][0] = '';
-    return view('TablasFrecuencias')->with('media',$media)->with('mediana',$mediana)->with('moda',$moda)
-    ->with('varianza',$varianza)->with('estandarD',$estandarD)->with('desviacionM',$desviacionM)
-    ->with('operacion',$operacion)->with('frequencyDistribution',$frequencyDistribution);
+    return view('TablasFrecuencias')->with('media', $media)->with('mediana', $mediana)->with('moda', $moda)
+        ->with('varianza', $varianza)->with('estandarD', $estandarD)->with('desviacionM', $desviacionM)
+        ->with('operacion', $operacion)->with('frequencyDistribution', $frequencyDistribution);
 });
 
 
@@ -95,37 +95,45 @@ Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function
 Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'tablafrecuencia'])->name('tabla1');
 Route::post('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'showFrequencyDistribution'])->name('showFrequencyDistribution');
 
-Route::get('/Medidas-de-posicion/cuartiles', function(){
+Route::get('/Medidas-de-posicion/cuartiles', function () {
     $result = "";
     $data = "";
     $position = "";
-    return view('Cuartiles')->with('result',$result)->with('data',$data)->with('position',$position);
+    return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
 });
 
 Route::post('/Medidas-de-posicion/cuartiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateQuartile'])->name('Quartile');
 
-Route::get('/Medidas-de-posicion/deciles', function(){
+Route::get('/Medidas-de-posicion/deciles', function () {
     $result = "";
     $data = "";
     $position = "";
-    return view('Deciles')->with('result',$result)->with('data',$data)->with('position',$position);
+    return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
 });
 
 Route::post('/Medidas-de-posicion/deciles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateDecile'])->name('Decile');
 
-Route::get('/Medidas-de-posicion/percentiles', function(){
+Route::get('/Medidas-de-posicion/percentiles', function () {
     $result = "";
     $data = "";
     $position = "";
-    return view('Percentiles')->with('result',$result)->with('data',$data)->with('position',$position);
+    return view('Percentiles')->with('result', $result)->with('data', $data)->with('position', $position);
 });
 
 Route::post('/Medidas-de-posicion/percentiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePercentile'])->name('Percentile');
 
-Route::get('/Calculadoras-extras/Coeficiente-de-Fisher', function(){
-    $result = ["","",""];
-    return view('CoeficienteFisher')->with('result',$result);
-    
+Route::get('/Calculadoras-extras/Coeficiente-de-Fisher', function () {
+    $result = ["", "", ""];
+    return view('CoeficienteFisher')->with('result', $result);
 });
 
 Route::post('/Calculadoras-extras/Coeficiente-de-Fisher/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateFisher'])->name('Fisher');
+// Route::get('/pareto', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('pareto');
+
+Route::get('/Calculadoras-extras/Coeficiente-de-Bowley', function () {
+    $result = "";
+
+    return view('CoeficienteBowley')->with('result', $result);
+});
+
+Route::post('/Calculadoras-extras/Coeficiente-de-Bowley/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateBowley'])->name('Bowley');
