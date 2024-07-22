@@ -171,6 +171,11 @@
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Curtosis
                                 </a>
                             </div>
+                            <div class=" w-100 ps-3 pb-2">
+                                <a href="{{ url('') }}"
+                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Grafica de pareto
+                                </a>
+                            </div>
                         </div>
                     </div>
 

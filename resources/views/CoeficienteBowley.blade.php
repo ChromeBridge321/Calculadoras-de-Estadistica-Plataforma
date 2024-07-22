@@ -27,6 +27,23 @@
                 <label for="result" class=" form-label">Resultado</label>
                 <input type="text" name="" id="result" value="{{ $result }}" class=" form-control">
             </div>
+            <div class=" col-6 pt-2">
+
+                <p>
+                    <br>
+                    <b>Si CAB < 0: </b> la distribución tiene una asimetría negativa, puesto que la distancia de la mediana al
+                            primer
+                            cuartil es mayor que al tercero. <br>
+                            <br>
+                            <b>Si CAB = 0: </b> la distribución es simétrica, ya que el primer y tercer
+                            cuartil están a la misma distancia de la mediana.
+                            <br>
+                            <br>
+                            <b>Si CAB > 0: </b> la distribución tiene una asimetría
+                            positiva, ya que la distancia de la mediana al tercer cuartil es mayor que al primero.
+                </p>
+                <br>
+            </div>
         </div>
     </div>
 @endsection
