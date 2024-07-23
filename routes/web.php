@@ -137,3 +137,23 @@ Route::get('/Calculadoras-extras/Coeficiente-de-Bowley', function () {
 });
 
 Route::post('/Calculadoras-extras/Coeficiente-de-Bowley/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateBowley'])->name('Bowley');
+
+
+Route::get('/Calculadoras-extras/Coeficiente-de-curtosis', function () {
+    $result = "";
+
+    return view('CoeficienteCurtosis')->with('result', $result);
+});
+
+Route::post('/Calculadoras-extras/Coeficiente-de-curtosis/resultado', [App\Http\Controllers\FunctionsController::class, ''])->name('');
+
+
+Route::get('/Calculadoras-extras/Coeficiente-de-Pearson', function () {
+    $result = "";
+
+    return view('CoeficientePearson')->with('result', $result);
+});
+
+Route::post('/Calculadoras-extras/Coeficiente-de-Pearson/resultado', [App\Http\Controllers\FunctionsController::class, ''])->name('');
+
+Route::get('/Calculadoras-extras/Grafica-de-pareto', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('Pareto');

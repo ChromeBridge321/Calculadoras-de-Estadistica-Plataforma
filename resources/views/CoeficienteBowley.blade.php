@@ -27,8 +27,7 @@
                 <label for="result" class=" form-label">Resultado</label>
                 <input type="text" name="" id="result" value="{{ $result }}" class=" form-control">
             </div>
-            <div class=" col-6 pt-2">
-
+            <div class=" col-12 pt-2">
                 <p>
                     <br>
                     <b>Si CAB < 0: </b> la distribución tiene una asimetría negativa, puesto que la distancia de la mediana al

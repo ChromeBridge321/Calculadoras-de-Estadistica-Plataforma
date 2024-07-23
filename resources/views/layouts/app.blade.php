@@ -14,6 +14,7 @@
     <title>Calculadoras</title>
     <link rel="icon" type="images/png" href="{{asset('images/logo.png')}}">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function validarInput(event) {
         const input = event.target;
@@ -161,18 +162,18 @@
                                 </a>
                             </div>
                             <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('') }}"
+                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-Pearson') }}"
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Asimetria
                                     de Pearson
                                 </a>
                             </div>
                             <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('') }}"
+                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-curtosis') }}"
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Curtosis
                                 </a>
                             </div>
                             <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('') }}"
+                                <a href="{{ url('/Calculadoras-extras/Grafica-de-pareto') }}"
                                     class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Grafica de pareto
                                 </a>
                             </div>
@@ -190,3 +191,4 @@
 
 </html>
 <script src="{{ asset('js/bootstrap.js') }}"></script>
+
