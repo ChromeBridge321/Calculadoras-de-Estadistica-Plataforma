@@ -16,29 +16,41 @@
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function validarInput(event) {
-        const input = event.target;
-        const valor = input.value;
-        const ultimoCaracter = valor[valor.length - 1];
+   function validarInput(event) {
+    const input = event.target;
+    const valor = input.value;
 
-        // Permitir solo números y comas
-        if (!/^[0-9,]*$/.test(valor)) {
-            input.value = valor.slice(0, -1);
-            return;
-        }
-
-        // No permitir dos comas seguidas
-        if (valor.includes(",,")) {
-            input.value = valor.replace(",,", ",");
-            return;
-        }
-
-        // No permitir que el primer caracter sea una coma
-        if (valor.startsWith(",")) {
-            input.value = valor.slice(1);
-            return;
-        }
+    // Permitir solo números, comas y puntos
+    if (!/^[0-9,\.]*$/.test(valor)) {
+        input.value = valor.slice(0, -1);
+        return;
     }
+
+    // No permitir dos comas seguidas
+    if (valor.includes(",,")) {
+        input.value = valor.replace(",,", ",");
+        return;
+    }
+
+    // No permitir dos puntos seguidos
+    if (valor.includes("..")) {
+        input.value = valor.replace("..", ".");
+        return;
+    }
+
+    // No permitir que el primer caracter sea una coma
+    if (valor.startsWith(",")) {
+        input.value = valor.slice(1);
+        return;
+    }
+
+    // No permitir que el primer caracter sea un punto
+    if (valor.startsWith(".")) {
+        input.value = valor.slice(1);
+        return;
+    }
+}
+
 </script>
 <body>
     <nav class=" pt-2 pb-2 " style="background-color: #DE1141;">
@@ -163,7 +175,7 @@
                             </div>
                             <div class=" w-100 ps-3 pb-2">
                                 <a href="{{ url('/Calculadoras-extras/Coeficiente-de-Pearson') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Asimetria
+                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Correlación
                                     de Pearson
                                 </a>
                             </div>

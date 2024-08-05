@@ -149,11 +149,11 @@ Route::post('/Calculadoras-extras/Coeficiente-de-curtosis/resultado', [App\Http\
 
 
 Route::get('/Calculadoras-extras/Coeficiente-de-Pearson', function () {
-    $result = "";
+    $pearson = "";
 
-    return view('CoeficientePearson')->with('result', $result);
+    return view('CoeficientePearson')->with('pearson', $pearson);
 });
 
-Route::post('/Calculadoras-extras/Coeficiente-de-Pearson/resultado', [App\Http\Controllers\FunctionsController::class, ''])->name('');
+Route::post('/Calculadoras-extras/Coeficiente-de-Pearson/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePearson'])->name('Pearson');
 
 Route::get('/Calculadoras-extras/Grafica-de-pareto', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('Pareto');
