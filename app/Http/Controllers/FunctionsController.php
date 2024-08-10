@@ -163,43 +163,35 @@ class FunctionsController extends Controller
 
     public function CalculatePearson(Request $request)
     {
-        $numberString1 = $request->input('data1'); //optengo la cadena de ambas variables
-        $numberString2 = $request->input('data2');
+        try {
+            $numberString1 = $request->input('data1'); //optengo la cadena de ambas variables
+            $numberString2 = $request->input('data2');
 
-        $numbersArray1 = explode(',', $numberString1); //convierto ambas variables a un array
-        $numbersArray2 = explode(',', $numberString2);
+            $numbersArray1 = explode(',', $numberString1); //convierto ambas variables a un array
+            $numbersArray2 = explode(',', $numberString2);
 
-        $median1 = array_sum($numbersArray1) / count($numbersArray1);
-        $median2 = array_sum($numbersArray2) / count($numbersArray2);
-        $n = count($numbersArray1); //calculo n
+            $median1 = array_sum($numbersArray1) / count($numbersArray1);
+            $median2 = array_sum($numbersArray2) / count($numbersArray2);
+            $n = count($numbersArray1); //calculo n
 
-        $variance1 = 0; //variable donde se guardara el resultado de la varianza de la variable 1
-        for ($i = 0; $i < $n; $i++) {
-            $variance1 += pow(($numbersArray1[$i] - $median1), 2); // calculo la varianza usando su formula haciendo uso de un recorrido for para
-            //poser hacer la sumatoria total del array menos la media en cada posicion del array y elevarlas al cuadrado usado la duncion pow()
+            $variance = $this->variance($numbersArray1);
+            $sDesviation1 = $this->esdev($variance);
+
+            $variance2 = $this->variance($numbersArray2);
+            $sDesviation2 = $this->esdev($variance2);
+
+            $sum = 0;
+            for ($i = 0; $i < $n; $i++) {
+                $sum += ($numbersArray1[$i] - $median1) * ($numbersArray2[$i] - $median2);
+            };
+
+            $pearson = $sum / (($n - 1) * $sDesviation1 * $sDesviation2);
+
+            return view('CoeficientePearson')->with('pearson', $pearson);
+        } catch (\Throwable $th) {
+            $pearson = "";
+            return view('CoeficientePearson')->with('pearson', $pearson);
         }
-        $variance1 = $variance1 / ($n - 1); // hago el ultimo paso para calcular la varianza de la variable 1
-
-        $sDesviation1 = sqrt($variance1); //calculo la desviacion estandar sacando la raiz cuadrada de la varianza haciendo uso de la funcio sqrt()
-
-        $variance2 = 0; //variable donde se guardara el resultado de la varianza de la variable 2
-        for ($i = 0; $i < $n; $i++) {
-            $variance2 += pow(($numbersArray2[$i] - $median2), 2); // calculo la varianza usando su formula haciendo uso de un recorrido for para
-            //poser hacer la sumatoria total del array menos la media en cada posicion del array y elevarlas al cuadrado usado la duncion pow()
-        }
-        $variance2 = $variance2 / ($n - 1); // hago el ultimo paso para calcular la varianza de la variable 2
-
-        $sDesviation2 = sqrt($variance2); //calculo la desviacion estandar sacando la raiz cuadrada de la varianza haciendo uso de la funcio sqrt()
-
-        $sum = 0;
-
-        for ($i = 0; $i < $n; $i++) {
-            $sum += ($numbersArray1[$i] - $median1) * ($numbersArray2[$i] - $median2);
-        };
-
-        $pearson = $sum / (($n - 1) * $sDesviation1 * $sDesviation2);
-
-        return view('CoeficientePearson')->with('pearson', $pearson);
     }
 
     private function calculate($string, $number, $operation)
@@ -277,5 +269,27 @@ class FunctionsController extends Controller
         }
 
         return $data; //devuelve el valor segun sea el caso  aplicado
+    }
+
+
+    private function variance($array)
+    {
+        //calculo de la varianza
+        $n = count($array);
+        $median = array_sum($array) / $n;
+        $variance = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $variance += pow(($array[$i] - $median), 2);
+        }
+        $variance = $variance / ($n - 1);
+
+        return $variance;
+    }
+
+
+    private function esdev($data)
+    {
+        $desviation = sqrt($data);
+        return $desviation;
     }
 }
