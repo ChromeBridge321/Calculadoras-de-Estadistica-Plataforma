@@ -50,8 +50,32 @@
         return;
     }
 }
+function validateInput() {
+            const inputField = document.getElementById('inputField');
+            let value = inputField.value;
 
+            // Eliminar cualquier carácter que no sea una letra, una coma o un espacio
+            value = value.replace(/[^a-zA-Z, ]/g, '');
+
+            // No permitir iniciar con una coma o espacio
+            if (value.charAt(0) === ',' || value.charAt(0) === ' ') {
+                value = value.slice(1);
+            }
+
+            // No permitir comas consecutivas o espacios consecutivos
+            value = value.replace(/,{2,}/g, ',');  // Reemplaza dobles comas con una sola coma
+            value = value.replace(/ {2,}/g, ' ');  // Reemplaza dobles espacios con un solo espacio
+
+            // No permitir una coma justo después de un espacio o un espacio justo después de una coma
+            value = value.replace(/, /g, ',');  // Elimina el espacio después de una coma
+            value = value.replace(/ ,/g, ',');  // Elimina el espacio antes de una coma
+
+            // Actualizar el valor del campo de entrada
+            inputField.value = value;
+        }
 </script>
+
+
 <body>
     <nav class=" pt-2 pb-2 " style="background-color: #DE1141;">
         <div class="container-fluid">

@@ -119,26 +119,6 @@ class FunctionsController extends Controller
         }
     }
 
-    public function CalculatePareto()
-    {
-        // Datos de ejemplo: frecuencias de problemas
-        $data = [50, 20, 15, 10, 5,];
-        $labels = ['Problema A', 'Problema B', 'Problema C', 'Problema D', 'Problema E'];
-
-        // Ordenar los datos de mayor a menor (ya están ordenados en este ejemplo)
-        // Calcular el porcentaje acumulado
-        $total = array_sum($data);
-        $cumulative = [];
-        $sum = 0;
-
-        foreach ($data as $value) {
-            $sum += $value;
-            $cumulative[] = round(($sum / $total) * 100, 2);
-        }
-
-        return view('pareto', compact('labels', 'data', 'cumulative'));
-    }
-
 
     public function CalculateBowley(Request $request)
     {
@@ -174,8 +154,8 @@ class FunctionsController extends Controller
             $median2 = array_sum($numbersArray2) / count($numbersArray2);
             $n = count($numbersArray1); //calculo n
 
-            $variance = $this->variance($numbersArray1);
-            $sDesviation1 = $this->esdev($variance);
+            $variance1 = $this->variance($numbersArray1);
+            $sDesviation1 = $this->esdev($variance1);
 
             $variance2 = $this->variance($numbersArray2);
             $sDesviation2 = $this->esdev($variance2);
@@ -194,7 +174,7 @@ class FunctionsController extends Controller
         }
     }
 
-    private function calculate($string, $number, $operation)
+    private function calculate($string, $number, $operation) // calcular que tipo de cuartil
     {
         try {
             $numberString = $string; //obtine los datos enviados desde la vista y los guarda en una variable
@@ -249,7 +229,7 @@ class FunctionsController extends Controller
         }
     }
 
-    private function PoU($data)
+    private function PoU($data) //se rendodea o se trunca?
     {
         //funcion encargada de convertir los decimales dependiendo que valor tenga
         $raw = floor($data); //redondea el valor de la posicion hacia abajo quitando los decimales
@@ -272,7 +252,7 @@ class FunctionsController extends Controller
     }
 
 
-    private function variance($array)
+    private function variance($array) //calculo de la varianza
     {
         //calculo de la varianza
         $n = count($array);
@@ -287,9 +267,71 @@ class FunctionsController extends Controller
     }
 
 
-    private function esdev($data)
+    private function esdev($data) //calculo de la desviacion estandar
     {
         $desviation = sqrt($data);
         return $desviation;
+    }
+
+
+
+    public function CalculateCurtosis(Request $request)
+    {
+        try {
+            $numberString = $request->input('data');
+            $numbersArray = explode(',', $numberString);
+
+            $n = count($numbersArray);
+            $median = array_sum($numbersArray) / $n;
+
+            $variance = $this->variance($numbersArray);
+            $desviation = $this->esdev($variance);
+
+            $sum = 0;
+
+            for ($i = 0; $i < $n; $i++) {
+
+                $sum += pow($numbersArray[$i] - $median, 4);
+            }
+
+            $curtosis = (($sum / ($n * (pow($desviation, 4)))) - 3);
+
+            return view('CoeficienteCurtosis')->with('curtosis', $curtosis)->with('n', $n)
+                ->with('median', $median)
+                ->with('variance', $variance)
+                ->with('desviation', $desviation);
+        } catch (\Throwable $th) {
+            $curtosis = "";
+            $n = "";
+            $median = "";
+            $variance = "";
+            $desviation = "";
+            return view('CoeficienteCurtosis')->with('curtosis', $curtosis)->with('n', $n)
+                ->with('median', $median)
+                ->with('variance', $variance)
+                ->with('desviation', $desviation);
+        }
+    }
+
+    public function CalculatePareto(Request $request)
+    {
+        // Datos de ejemplo: frecuencias de problemas
+        $data = $request->input('data');
+        $data = explode(',',$data);
+        $labels = $request->input('labels');
+        $labels = explode(',',$labels);
+
+        // Ordenar los datos de mayor a menor (ya están ordenados en este ejemplo)
+        // Calcular el porcentaje acumulado
+        $total = array_sum($data);
+        $cumulative = [];
+        $sum = 0;
+
+        foreach ($data as $value) {
+            $sum += $value;
+            $cumulative[] = round(($sum / $total) * 100, 2);
+        }
+
+        return view('pareto', compact('labels', 'data', 'cumulative'));
     }
 }

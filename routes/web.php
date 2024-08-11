@@ -140,12 +140,18 @@ Route::post('/Calculadoras-extras/Coeficiente-de-Bowley/resultado', [App\Http\Co
 
 
 Route::get('/Calculadoras-extras/Coeficiente-de-curtosis', function () {
-    $result = "";
-
-    return view('CoeficienteCurtosis')->with('result', $result);
+    $curtosis = "";
+    $n = "";
+    $median = "";
+    $variance = "";
+    $desviation = "";
+    return view('CoeficienteCurtosis')->with('curtosis',$curtosis)->with('n',$n)
+    ->with('median',$median)
+    ->with('variance',$variance)
+    ->with('desviation',$desviation);
 });
 
-Route::post('/Calculadoras-extras/Coeficiente-de-curtosis/resultado', [App\Http\Controllers\FunctionsController::class, ''])->name('');
+Route::post('/Calculadoras-extras/Coeficiente-de-curtosis/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateCurtosis'])->name('Curtosis');
 
 
 Route::get('/Calculadoras-extras/Coeficiente-de-Pearson', function () {
@@ -156,4 +162,12 @@ Route::get('/Calculadoras-extras/Coeficiente-de-Pearson', function () {
 
 Route::post('/Calculadoras-extras/Coeficiente-de-Pearson/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePearson'])->name('Pearson');
 
-Route::get('/Calculadoras-extras/Grafica-de-pareto', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('Pareto');
+
+Route::get('/Calculadoras-extras/Grafica-de-pareto', function () {
+    $data = "";
+    $labels = "";
+    $cumulative = "";
+    return view('pareto', compact('labels', 'data', 'cumulative'));
+});
+
+Route::post('/Calculadoras-extras/Grafica-de-pareto/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('Pareto');
