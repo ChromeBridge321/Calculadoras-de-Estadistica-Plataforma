@@ -76,7 +76,7 @@
     </form>
     
     <div class=" col-12 pt-5">
-        <h2>Tabla de distribucion de frecuencias no agrupados</h2>
+        <h2>Tabla de distribucion de frecuencias agrupados</h2>
     </div>
     
     <div class=" col-12">
@@ -195,7 +195,7 @@
     </form>
     
     <div class=" col-12 pt-5">
-    <h2>Tabla de distribucion de frecuencias agrupados</h2>
+    <h2>Tabla de distribucion de frecuencias de datos no agrupados</h2>
     </div>
     
     <div class=" col-12">
