@@ -17,8 +17,6 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd xml pdo_pgsql
 
-# Instala la extensión de MongoDB
-RUN pecl install mongodb && docker-php-ext-enable mongodb
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -33,10 +31,6 @@ COPY . .
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Instala las dependencias de Composer, incluido mongodb/mongodb
-RUN composer require mongodb/mongodb \
-    && composer install --no-dev --optimize-autoloader
 
 # Expone el puerto 80
 EXPOSE 80
