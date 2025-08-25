@@ -35,17 +35,11 @@ COPY composer.json composer.lock package.json ./
 # Instala las dependencias de Composer
 RUN composer install --no-dev --no-scripts --no-autoloader
 
-# Instala las dependencias de Node.js
-RUN npm install
-
 # Copia el resto de los archivos del proyecto
 COPY . .
 
 # Genera el autoloader optimizado
 RUN composer dump-autoload --optimize
-
-# Compila los assets con Vite
-RUN npm run build
 
 # Ajusta los permisos de los archivos
 RUN chown -R www-data:www-data /var/www/html \
