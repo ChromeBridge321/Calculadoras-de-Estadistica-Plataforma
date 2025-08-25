@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('index');
@@ -58,10 +59,20 @@ Route::get('/medididas-de-tendencia-central/muestra', function () {
 
 
 
-Route::post('/medididas-de-tendencia-central/media/resultado', [App\Http\Controllers\FuncionesController::class, 'media'])->name('media');
-Route::post('/medididas-de-tendencia-central/mediana/resultado', [App\Http\Controllers\FuncionesController::class, 'mediana'])->name('mediana');
-Route::post('/medididas-de-tendencia-central/moda/resultado', [App\Http\Controllers\FuncionesController::class, 'moda'])->name('moda');
-Route::post('/medididas-de-tendencia-central/muestra/resultado', [App\Http\Controllers\FuncionesController::class, 'muestra'])->name('muestra');
+// Rutas optimizadas para medidas de tendencia central
+Route::post('/medididas-de-tendencia-central/media/resultado', function(Request $request) {
+    return app(App\Http\Controllers\StatisticsController::class)->calculateCentralTendency($request, 'media');
+})->name('media');
+
+Route::post('/medididas-de-tendencia-central/mediana/resultado', function(Request $request) {
+    return app(App\Http\Controllers\StatisticsController::class)->calculateCentralTendency($request, 'mediana');
+})->name('mediana');
+
+Route::post('/medididas-de-tendencia-central/moda/resultado', function(Request $request) {
+    return app(App\Http\Controllers\StatisticsController::class)->calculateCentralTendency($request, 'moda');
+})->name('moda');
+
+Route::post('/medididas-de-tendencia-central/muestra/resultado', [App\Http\Controllers\StatisticsController::class, 'calculateSampleSize'])->name('muestra');
 
 Route::get('/tablas-de-distribucion-de-frecuencias/datos/agrupados', function () {
     $media = 0;
@@ -92,8 +103,9 @@ Route::get('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados', function
 
 
 
-Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'tablafrecuencia'])->name('tabla1');
-Route::post('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados/resultado', [App\Http\Controllers\FuncionesController::class, 'showFrequencyDistribution'])->name('showFrequencyDistribution');
+// Rutas optimizadas para tablas de frecuencias
+Route::post('/tablas-de-distribucion-de-frecuencias/datos/agrupados/resultado', [App\Http\Controllers\StatisticsController::class, 'generateFrequencyTable'])->name('tabla1');
+Route::post('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados/resultado', [App\Http\Controllers\StatisticsController::class, 'generateGroupedFrequencyTable'])->name('showFrequencyDistribution');
 
 Route::get('/Medidas-de-posicion/cuartiles', function () {
     $result = "";
@@ -102,7 +114,7 @@ Route::get('/Medidas-de-posicion/cuartiles', function () {
     return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
 });
 
-Route::post('/Medidas-de-posicion/cuartiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateQuartile'])->name('Quartile');
+Route::post('/Medidas-de-posicion/cuartiles/resultado', [App\Http\Controllers\FunctionsController::class, 'calculateQuartile'])->name('Quartile');
 
 Route::get('/Medidas-de-posicion/deciles', function () {
     $result = "";
@@ -111,7 +123,7 @@ Route::get('/Medidas-de-posicion/deciles', function () {
     return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
 });
 
-Route::post('/Medidas-de-posicion/deciles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateDecile'])->name('Decile');
+Route::post('/Medidas-de-posicion/deciles/resultado', [App\Http\Controllers\FunctionsController::class, 'calculateDecile'])->name('Decile');
 
 Route::get('/Medidas-de-posicion/percentiles', function () {
     $result = "";
@@ -120,14 +132,14 @@ Route::get('/Medidas-de-posicion/percentiles', function () {
     return view('Percentiles')->with('result', $result)->with('data', $data)->with('position', $position);
 });
 
-Route::post('/Medidas-de-posicion/percentiles/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePercentile'])->name('Percentile');
+Route::post('/Medidas-de-posicion/percentiles/resultado', [App\Http\Controllers\FunctionsController::class, 'calculatePercentile'])->name('Percentile');
 
 Route::get('/Calculadoras-extras/Coeficiente-de-Fisher', function () {
     $result = ["", "", ""];
     return view('CoeficienteFisher')->with('result', $result);
 });
 
-Route::post('/Calculadoras-extras/Coeficiente-de-Fisher/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateFisher'])->name('Fisher');
+Route::post('/Calculadoras-extras/Coeficiente-de-Fisher/resultado', [App\Http\Controllers\FunctionsController::class, 'calculateFisher'])->name('Fisher');
 // Route::get('/pareto', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('pareto');
 
 Route::get('/Calculadoras-extras/Coeficiente-de-Bowley', function () {
@@ -136,7 +148,7 @@ Route::get('/Calculadoras-extras/Coeficiente-de-Bowley', function () {
     return view('CoeficienteBowley')->with('result', $result);
 });
 
-Route::post('/Calculadoras-extras/Coeficiente-de-Bowley/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateBowley'])->name('Bowley');
+Route::post('/Calculadoras-extras/Coeficiente-de-Bowley/resultado', [App\Http\Controllers\FunctionsController::class, 'calculateBowley'])->name('Bowley');
 
 
 Route::get('/Calculadoras-extras/Coeficiente-de-curtosis', function () {
@@ -151,7 +163,7 @@ Route::get('/Calculadoras-extras/Coeficiente-de-curtosis', function () {
     ->with('desviation',$desviation);
 });
 
-Route::post('/Calculadoras-extras/Coeficiente-de-curtosis/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculateCurtosis'])->name('Curtosis');
+Route::post('/Calculadoras-extras/Coeficiente-de-curtosis/resultado', [App\Http\Controllers\FunctionsController::class, 'calculateCurtosis'])->name('Curtosis');
 
 
 Route::get('/Calculadoras-extras/Coeficiente-de-Pearson', function () {
@@ -160,7 +172,7 @@ Route::get('/Calculadoras-extras/Coeficiente-de-Pearson', function () {
     return view('CoeficientePearson')->with('pearson', $pearson);
 });
 
-Route::post('/Calculadoras-extras/Coeficiente-de-Pearson/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePearson'])->name('Pearson');
+Route::post('/Calculadoras-extras/Coeficiente-de-Pearson/resultado', [App\Http\Controllers\FunctionsController::class, 'calculatePearson'])->name('Pearson');
 
 
 Route::get('/Calculadoras-extras/Grafica-de-pareto', function () {
@@ -170,4 +182,4 @@ Route::get('/Calculadoras-extras/Grafica-de-pareto', function () {
     return view('pareto', compact('labels', 'data', 'cumulative'));
 });
 
-Route::post('/Calculadoras-extras/Grafica-de-pareto/resultado', [App\Http\Controllers\FunctionsController::class, 'CalculatePareto'])->name('Pareto');
+Route::post('/Calculadoras-extras/Grafica-de-pareto/resultado', [App\Http\Controllers\FunctionsController::class, 'calculatePareto'])->name('Pareto');

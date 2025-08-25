@@ -3,335 +3,358 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\For_;
-use PhpParser\Node\Stmt\TryCatch;
 
 class FunctionsController extends Controller
 {
-
-    public function CalculateQuartile(Request $request)
+    /**
+     * Calcula cuartiles, deciles o percentiles según el tipo de operación
+     */
+    public function calculateQuartile(Request $request)
     {
-        try {
-            $array = $this->calculate($request->input('data'), $request->number, $request->input('operation')); // aqui solo hace uso de la funcion calculate y se le pasan 3 parametros
-            $result = $array[0]; // el resultado esta en la posicion 0 del array                                //la cadena de numeros, el numero de cuartil, decil o percentil y el tipo de operacion                                                                               // que le corresponde a cada operacion
-            $data = $array[1];                                                                                  // que le corresponde a cada operacion
-            $position = $array[2];
-
-            return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
-        } catch (\Throwable $th) {
-            $result = "";
-            $data = "";
-            $position = "";
-            return view('Cuartiles')->with('result', $result)->with('data', $data)->with('position', $position);
-        }
+        return $this->calculatePositionalMeasure($request, 'Cuartiles', 1);
     }
 
-
-
-    public function CalculateDecile(Request $request)
+    public function calculateDecile(Request $request)
     {
-        try {
-            $array = $this->calculate($request->input('data'), $request->number, $request->input('operation'));
-            $result = $array[0];
-            $data = $array[1];
-            $position = $array[2];
-
-            return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
-        } catch (\Throwable $th) {
-            $result = "";
-            $data = "";
-            $position = "";
-            return view('Deciles')->with('result', $result)->with('data', $data)->with('position', $position);
-        }
+        return $this->calculatePositionalMeasure($request, 'Deciles', 2);
     }
 
-    public function CalculatePercentile(Request $request)
+    public function calculatePercentile(Request $request)
     {
-        try {
-            $array = $this->calculate($request->input('data'), $request->number, $request->input('operation'));
-            $result = $array[0];
-            $data = $array[1];
-            $position = $array[2];
-
-            return view('Percentiles')->with('result', $result)->with('data', $data)->with('position', $position);
-        } catch (\Throwable $th) {
-            $result = "";
-            $data = "";
-            $position = "";
-            return view('Percentiles')->with('result', $result)->with('data', $data)->with('position', $position);
-        }
+        return $this->calculatePositionalMeasure($request, 'Percentiles', 3);
     }
 
-
-    public function CalculateFisher(Request $request)
+    /**
+     * Calcula el coeficiente de asimetría de Fisher
+     */
+    public function calculateFisher(Request $request)
     {
-
         try {
-            $numberString = $request->input('data'); //obtengo la cadena de datos
-            $numbersArray = explode(',', $numberString); // transformo esa cadena a un array de numeros
-            $n = count($numbersArray); // cuento la cantidad de datos que hay en el array
-            $median = array_sum($numbersArray) / $n; // calculo la media
-            sort($numbersArray); // ordeno de menor a mayor el array de numeros
-
-            $variance = 0; //variable donde se guardara el resultado de la varianza
-            for ($i = 0; $i < $n; $i++) {
-                $variance += pow(($numbersArray[$i] - $median), 2); // calculo la varianza usando su formula haciendo uso de un recorrido for para
-                //poser hacer la sumatoria total del array menos la media en cada posicion del array y elevarlas al cuadrado usado la duncion pow()
+            $data = $this->parseAndValidateData($request->input('data'));
+            
+            $n = count($data);
+            $mean = array_sum($data) / $n;
+            $variance = $this->calculateSampleVariance($data, $mean);
+            $stdDev = sqrt($variance);
+            
+            // Coeficiente de asimetría de Fisher
+            $sum = 0;
+            foreach ($data as $value) {
+                $sum += pow(($value - $mean) / $stdDev, 3);
             }
-            $variance = $variance / ($n); // hago el ultimo paso para calcular la varianza
+            
+            $fisher = $sum / $n;
+            $result = $this->interpretFisherCoefficient($fisher);
+            
+            return view('CoeficienteFisher', ['result' => $result]);
+        } catch (\Exception $e) {
+            return view('CoeficienteFisher', ['result' => ['', '', '']]);
+        }
+    }
 
-            $sDesviation = sqrt($variance); //calculo la desviacion estandar sacando la raiz cuadrada de la varianza haciendo uso de la funcio sqrt()
+    /**
+     * Calcula el coeficiente de asimetría de Bowley
+     */
+    public function calculateBowley(Request $request)
+    {
+        try {
+            $data = $this->parseAndValidateData($request->input('data'));
+            
+            $Q1 = $this->calculatePercentileValue($data, 25);
+            $Q2 = $this->calculatePercentileValue($data, 50); // Mediana
+            $Q3 = $this->calculatePercentileValue($data, 75);
+            
+            $bowley = ($Q3 + Q1 - 2 * $Q2) / ($Q3 - Q1);
+            
+            return view('CoeficienteBowley', ['result' => round($bowley, 4)]);
+        } catch (\Exception $e) {
+            return view('CoeficienteBowley', ['result' => '']);
+        }
+    }
 
-
-            $sum = 0; // variable para poder almacenar la sumatoria requeria para el coeficiente de fisher
-            for ($i = 0; $i < $n; $i++) {
-                $sum += pow(($numbersArray[$i] - $median), 3); //haciendo uso de un recorrido for hago la sumatoria de cada numero en el array en cada posicion 
-                //menos la media ya calculada y todo elevado al cuadrado
+    /**
+     * Calcula el coeficiente de correlación de Pearson
+     */
+    public function calculatePearson(Request $request)
+    {
+        try {
+            $data1 = $this->parseAndValidateData($request->input('data1'));
+            $data2 = $this->parseAndValidateData($request->input('data2'));
+            
+            if (count($data1) !== count($data2)) {
+                throw new \Exception('Los conjuntos de datos deben tener el mismo tamaño');
             }
+            
+            $n = count($data1);
+            $mean1 = array_sum($data1) / $n;
+            $mean2 = array_sum($data2) / $n;
+            
+            $numerator = 0;
+            $sumSquares1 = 0;
+            $sumSquares2 = 0;
+            
+            for ($i = 0; $i < $n; $i++) {
+                $diff1 = $data1[$i] - $mean1;
+                $diff2 = $data2[$i] - $mean2;
+                
+                $numerator += $diff1 * $diff2;
+                $sumSquares1 += pow($diff1, 2);
+                $sumSquares2 += pow($diff2, 2);
+            }
+            
+            $denominator = sqrt($sumSquares1 * $sumSquares2);
+            $pearson = $denominator != 0 ? $numerator / $denominator : 0;
+            
+            return view('CoeficientePearson', ['pearson' => round($pearson, 4)]);
+        } catch (\Exception $e) {
+            return view('CoeficientePearson', ['pearson' => '']);
+        }
+    }
 
-            $result = ((1 / $n) * ($sum)) / pow($sDesviation, 3); // al resultado de la sumatoria le aplicamos la formula de coeficiente de fisher
+    /**
+     * Calcula el coeficiente de curtosis
+     */
+    public function calculateCurtosis(Request $request)
+    {
+        try {
+            $data = $this->parseAndValidateData($request->input('data'));
+            
+            $n = count($data);
+            $mean = array_sum($data) / $n;
+            $variance = $this->calculateSampleVariance($data, $mean);
+            $stdDev = sqrt($variance);
+            
+            $sum = 0;
+            foreach ($data as $value) {
+                $sum += pow(($value - $mean) / $stdDev, 4);
+            }
+            
+            $curtosis = ($sum / $n) - 3; // Curtosis exceso
+            
+            return view('CoeficienteCurtosis', [
+                'curtosis' => round($curtosis, 4),
+                'n' => $n,
+                'median' => round($mean, 4),
+                'variance' => round($variance, 4),
+                'desviation' => round($stdDev, 4)
+            ]);
+        } catch (\Exception $e) {
+            return view('CoeficienteCurtosis', [
+                'curtosis' => '',
+                'n' => '',
+                'median' => '',
+                'variance' => '',
+                'desviation' => ''
+            ]);
+        }
+    }
 
+    /**
+     * Genera un diagrama de Pareto
+     */
+    public function calculatePareto(Request $request)
+    {
+        try {
+            $data = $this->parseAndValidateData($request->input('data'));
+            $labels = array_map('trim', explode(',', $request->input('labels')));
+            
+            if (count($data) !== count($labels)) {
+                throw new \Exception('Los datos y las etiquetas deben tener el mismo tamaño');
+            }
+            
+            // Combinar datos y etiquetas, luego ordenar por valor descendente
+            $combined = array_combine($labels, $data);
+            arsort($combined);
+            
+            $sortedLabels = array_keys($combined);
+            $sortedData = array_values($combined);
+            
+            // Calcular porcentajes acumulados
+            $total = array_sum($sortedData);
+            $cumulative = [];
+            $sum = 0;
+            
+            foreach ($sortedData as $value) {
+                $sum += $value;
+                $cumulative[] = round(($sum / $total) * 100, 2);
+            }
+            
+            return view('pareto', [
+                'labels' => $sortedLabels,
+                'data' => $sortedData,
+                'cumulative' => $cumulative
+            ]);
+        } catch (\Exception $e) {
+            return view('pareto', [
+                'labels' => [],
+                'data' => [],
+                'cumulative' => []
+            ]);
+        }
+    }
 
-            if ($result == 0) { // comprobatorias para cada resltado. esto esta hecho para darle una mejor retro alimentacion al usuario
-                $fisher = ["Simétrica", "$result", "1"]; // si el resultado es = 0
-            } elseif ($result > 0 && $result < 0.5) {
-                $fisher = ["Asimetría Positiva Leve", "$result", "2"]; // si el resultado esta entre 0 y 0.5
-            } elseif ($result >= 0.5 && $result < 1) {
-                $fisher = ["Asimetría Positiva Moderada", "$result", "2"]; // si el resultado esta entre 0.5 y 1
-            } elseif ($result >= 1) {
-                $fisher = ["Asimetría Positiva Alta", "$result", "2"]; // si el resultado es = 1 0 mayor
-            } elseif ($result < 0 && $result > -0.5) {
-                $fisher = ["Asimetría Negativa Leve", "$result", "3"]; // si el resultado esta entre 0 y -0.5
-            } elseif ($result <= -0.5 && $result > -1) {
-                $fisher = ["Asimetría Negativa Moderada", "$result", "3"]; // si el resultado esta entre -0.5 y -1
-            } elseif ($result <= -1) {
-                $fisher = ["Asimetría Negativa Alta", "$result", "3"]; // si el resultado es menor o igual a -1
+    // ===========================================
+    // MÉTODOS AUXILIARES PRIVADOS
+    // ===========================================
+
+    /**
+     * Método genérico para calcular medidas posicionales
+     */
+    private function calculatePositionalMeasure(Request $request, $viewName, $operation)
+    {
+        try {
+            $data = $this->parseAndValidateData($request->input('data'));
+            $number = (int) $request->number;
+            
+            $result = $this->calculatePositionalValue($data, $number, $operation);
+            $position = $this->calculatePosition($data, $number, $operation);
+            
+            sort($data);
+            $dataString = implode(', ', $data);
+            
+            return view($viewName, [
+                'result' => round($result, 4),
+                'data' => $dataString,
+                'position' => $position
+            ]);
+        } catch (\Exception $e) {
+            return view($viewName, [
+                'result' => '',
+                'data' => '',
+                'position' => ''
+            ]);
+        }
+    }
+
+    /**
+     * Calcula el valor posicional (cuartil, decil o percentil)
+     */
+    private function calculatePositionalValue($data, $number, $operation)
+    {
+        sort($data);
+        $n = count($data);
+        
+        switch ($operation) {
+            case 1: // Cuartiles
+                $percentile = $number * 25;
+                break;
+            case 2: // Deciles
+                $percentile = $number * 10;
+                break;
+            case 3: // Percentiles
+                $percentile = $number;
+                break;
+            default:
+                throw new \Exception('Operación no válida');
+        }
+        
+        return $this->calculatePercentileValue($data, $percentile);
+    }
+
+    /**
+     * Calcula un percentil específico
+     */
+    private function calculatePercentileValue($data, $percentile)
+    {
+        sort($data);
+        $n = count($data);
+        
+        $index = ($percentile / 100) * ($n - 1);
+        
+        if (floor($index) == $index) {
+            return $data[$index];
+        } else {
+            $lower = floor($index);
+            $upper = ceil($index);
+            $weight = $index - $lower;
+            
+            return $data[$lower] * (1 - $weight) + $data[$upper] * $weight;
+        }
+    }
+
+    /**
+     * Calcula la posición teórica
+     */
+    private function calculatePosition($data, $number, $operation)
+    {
+        $n = count($data);
+        
+        switch ($operation) {
+            case 1: // Cuartiles
+                return ($number * ($n + 1)) / 4;
+            case 2: // Deciles
+                return ($number * ($n + 1)) / 10;
+            case 3: // Percentiles
+                return ($number * ($n + 1)) / 100;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Parsea y valida los datos de entrada
+     */
+    private function parseAndValidateData($dataString)
+    {
+        if (empty($dataString)) {
+            throw new \Exception('No se proporcionaron datos');
+        }
+
+        $data = explode(',', $dataString);
+        $data = array_map('trim', $data);
+        $data = array_filter($data, function($value) {
+            return is_numeric($value);
+        });
+        
+        if (empty($data)) {
+            throw new \Exception('No se encontraron datos numéricos válidos');
+        }
+
+        return array_map('floatval', $data);
+    }
+
+    /**
+     * Calcula la varianza muestral
+     */
+    private function calculateSampleVariance($data, $mean)
+    {
+        $n = count($data);
+        if ($n <= 1) return 0;
+        
+        $sumSquaredDifferences = array_sum(array_map(function($value) use ($mean) {
+            return pow($value - $mean, 2);
+        }, $data));
+        
+        return $sumSquaredDifferences / ($n - 1);
+    }
+
+    /**
+     * Interpreta el coeficiente de Fisher
+     */
+    private function interpretFisherCoefficient($fisher)
+    {
+        $value = round($fisher, 4);
+        
+        if (abs($fisher) < 0.5) {
+            if ($fisher > 0) {
+                return ["Asimetría Positiva Leve", $value, "2"];
+            } elseif ($fisher < 0) {
+                return ["Asimetría Negativa Leve", $value, "3"];
             } else {
-                $fisher = ["Valor de γ fuera del rango esperado", "$result", "0"]; // si por cualquier otro motivo es diferente a todo retornara un mensaje de error
-                // algo que es poco probable
+                return ["Simétrica", $value, "1"];
             }
-
-
-            return view('CoeficienteFisher')->with('result', $fisher); // se retorna el resultado a la vista correspondiente
-        } catch (\Throwable $th) {
-            $fisher = ["", "", ""];
-            return view('CoeficienteFisher')->with('result', $fisher); // se retorna el resultado vacio a la vista correspondiente 
-        }
-    }
-
-
-    public function CalculateBowley(Request $request)
-    {
-
-        try {
-            $array1 = $this->calculate($request->input('data'), 1, 1); //aplico la funcion calculate pasandole los paramatros que pide 
-            $array2 = $this->calculate($request->input('data'), 2, 1); //la cadena, el numero de cuartil y el tipo de operacion al que pertenece
-            $array3 = $this->calculate($request->input('data'), 3, 1);
-            $Q1 = $array1[0]; // cada cuartil pertenece a un tipo de array y solo obtengo el resultado de la operacion que esta en la posicion o del array
-            $Q2 = $array2[0];
-            $Q3 = $array3[0];
-
-            $result = (($Q3 - $Q2) - ($Q2 - $Q1)) / ($Q3 - $Q1); // aplico la formula para calcular el coeficiente de bowley
-
-            return view('CoeficienteBowley')->with('result', $result); //retorno la vista junto con el resultado de la operacion
-
-        } catch (\Throwable $th) { // en caso de que falle algo retorno la vista con un resultado vacio para evitar errores al mostrar la vista
-            $result = "";
-            return view('CoeficienteBowley')->with('result', $result);
-        }
-    }
-
-    public function CalculatePearson(Request $request)
-    {
-        try {
-            $numberString1 = $request->input('data1'); //optengo la cadena de ambas variables
-            $numberString2 = $request->input('data2');
-
-            $numbersArray1 = explode(',', $numberString1); //convierto ambas variables a un array
-            $numbersArray2 = explode(',', $numberString2);
-
-            $median1 = array_sum($numbersArray1) / count($numbersArray1);
-            $median2 = array_sum($numbersArray2) / count($numbersArray2);
-            $n = count($numbersArray1); //calculo n
-
-            $variance1 = $this->variance($numbersArray1);
-            $sDesviation1 = $this->esdev($variance1);
-
-            $variance2 = $this->variance($numbersArray2);
-            $sDesviation2 = $this->esdev($variance2);
-
-            $sum = 0;
-            for ($i = 0; $i < $n; $i++) {
-                $sum += ($numbersArray1[$i] - $median1) * ($numbersArray2[$i] - $median2);
-            };
-
-            $pearson = $sum / (($n - 1) * $sDesviation1 * $sDesviation2);
-
-            return view('CoeficientePearson')->with('pearson', $pearson);
-        } catch (\Throwable $th) {
-            $pearson = "";
-            return view('CoeficientePearson')->with('pearson', $pearson);
-        }
-    }
-
-    private function calculate($string, $number, $operation) // calcular que tipo de cuartil
-    {
-        try {
-            $numberString = $string; //obtine los datos enviados desde la vista y los guarda en una variable
-
-            if ($operation == 1) {
-                $quartileNumber = $number; //obtine el numero de cuartil a calcular enviado desde la vista
+        } elseif (abs($fisher) < 1) {
+            if ($fisher > 0) {
+                return ["Asimetría Positiva Moderada", $value, "2"];
+            } else {
+                return ["Asimetría Negativa Moderada", $value, "3"];
             }
-
-            if ($operation == 2) {
-                $decileNumber = $number; //obtine el numero de cuartil a calcular enviado desde la vista
+        } else {
+            if ($fisher > 0) {
+                return ["Asimetría Positiva Alta", $value, "2"];
+            } else {
+                return ["Asimetría Negativa Alta", $value, "3"];
             }
-
-
-            if ($operation == 3) {
-                $percentileNumber = $number; //obtine el numero de cuartil a calcular enviado desde la vista
-            }
-
-
-            $numbersArray = explode(',', $numberString); //combierte la cadena enviada de la vista en un array de numeros
-            $n = count($numbersArray); //cuenta el numero de datos que hay dentro del array
-
-            if ($operation == 1) {
-                $OP = ($quartileNumber * ($n + 1)) / 4; //aplica la operacion del cuartil para encontrar la posicion
-            }
-
-            if ($operation == 2) {
-                $OP = ($decileNumber * ($n + 1)) / 10; //aplica la operacion del decil para encontrar la posicion
-            }
-
-            if ($operation == 3) {
-                $OP = ($percentileNumber * ($n + 1)) / 100; //aplica la operacion del percentil para encontrar la posicion
-            }
-
-            sort($numbersArray); //ordena de menos a mayor los datos contenidos en el array
-            $position = $this->PoU($OP); //aplica la funcion privada llamada PoU
-
-
-
-            if (($position - (floor($position))) == 0.5) { //si la posicion contiene el .5 en su decimal entonces se aplica el id
-                $p1 = floor($position) - 1; //encuentra el valor de la posicion 1 restandole 1 debido a la naturaleza de un array
-                $p2 = ($position + 0.5) - 1; // encuentra la posicion 2 restando 1
-                $result = ($numbersArray[$p1] + $numbersArray[$p2]) / 2; //se obtiene el valor medio entre ambas posiciones
-                //sumandolas y dividiendola entre 2
-            } else { // si la posicion no contiene .5 se aplica lo siguiente
-                $result = $numbersArray[$position - 1]; // la posicion del valor es igual al valor de la posicion en el array menos 1
-            }
-            $numbersArray = implode(',  ', $numbersArray); // se convierte el array a una cadena
-
-            $array = [$result, $numbersArray, $position]; // guerda las operaciones realizadas dentro de un array y lo retorna
-            return $array;
-        } catch (\Throwable $th) {
         }
-    }
-
-    private function PoU($data) //se rendodea o se trunca?
-    {
-        //funcion encargada de convertir los decimales dependiendo que valor tenga
-        $raw = floor($data); //redondea el valor de la posicion hacia abajo quitando los decimales
-        // y dejando solo el valor neto
-        $whatIf = $data - $raw; // resta la posicion optenida de $data y le resta el valor neto
-
-        if ($whatIf < 0.5) { // si el resultado de la resta es menor a 0.5 redondea hacia abajo
-            $data = floor($data);
-        }
-
-        if ($whatIf > 0.55) { // si la resta es mayor a 0.55 redondea hacia arriba
-            $data = round($data);
-        }
-
-        if ($whatIf == 0.5) { //si el valor es 0.5 exacto devuelve el valor tal cual es
-            return $data;
-        }
-
-        return $data; //devuelve el valor segun sea el caso  aplicado
-    }
-
-
-    private function variance($array) //calculo de la varianza
-    {
-        //calculo de la varianza
-        $n = count($array);
-        $median = array_sum($array) / $n;
-        $variance = 0;
-        for ($i = 0; $i < $n; $i++) {
-            $variance += pow(($array[$i] - $median), 2);
-        }
-        $variance = $variance / ($n - 1);
-
-        return $variance;
-    }
-
-
-    private function esdev($data) //calculo de la desviacion estandar
-    {
-        $desviation = sqrt($data);
-        return $desviation;
-    }
-
-
-
-    public function CalculateCurtosis(Request $request)
-    {
-        try {
-            $numberString = $request->input('data');
-            $numbersArray = explode(',', $numberString);
-
-            $n = count($numbersArray);
-            $median = array_sum($numbersArray) / $n;
-
-            $variance = $this->variance($numbersArray);
-            $desviation = $this->esdev($variance);
-
-            $sum = 0;
-
-            for ($i = 0; $i < $n; $i++) {
-
-                $sum += pow($numbersArray[$i] - $median, 4);
-            }
-
-            $curtosis = (($sum / ($n * (pow($desviation, 4)))) - 3);
-
-            return view('CoeficienteCurtosis')->with('curtosis', $curtosis)->with('n', $n)
-                ->with('median', $median)
-                ->with('variance', $variance)
-                ->with('desviation', $desviation);
-        } catch (\Throwable $th) {
-            $curtosis = "";
-            $n = "";
-            $median = "";
-            $variance = "";
-            $desviation = "";
-            return view('CoeficienteCurtosis')->with('curtosis', $curtosis)->with('n', $n)
-                ->with('median', $median)
-                ->with('variance', $variance)
-                ->with('desviation', $desviation);
-        }
-    }
-
-    public function CalculatePareto(Request $request)
-    {
-        // Datos de ejemplo: frecuencias de problemas
-        $data = $request->input('data');
-        $data = explode(',',$data);
-        $labels = $request->input('labels');
-        $labels = explode(',',$labels);
-
-        // Ordenar los datos de mayor a menor (ya están ordenados en este ejemplo)
-        // Calcular el porcentaje acumulado
-        $total = array_sum($data);
-        $cumulative = [];
-        $sum = 0;
-
-        foreach ($data as $value) {
-            $sum += $value;
-            $cumulative[] = round(($sum / $total) * 100, 2);
-        }
-
-        return view('pareto', compact('labels', 'data', 'cumulative'));
     }
 }
