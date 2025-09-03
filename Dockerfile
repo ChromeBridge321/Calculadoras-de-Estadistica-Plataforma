@@ -42,4 +42,4 @@ COPY default.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite
 
 # Comando para iniciar Apache
-CMD ["apache2-foreground"]
+CMD ["apache2-foreground",  "systemctl start apache2"]
