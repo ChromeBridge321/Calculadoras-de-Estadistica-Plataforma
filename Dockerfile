@@ -17,6 +17,10 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd xml pdo_pgsql
 
+# Instalar Node.js 22
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install -y nodejs
+
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -34,6 +38,12 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Dependencias JS
+RUN npm install
+
+# Compilar Vite
+RUN npm run build
 
 # Expone el puerto 80
 EXPOSE 80
