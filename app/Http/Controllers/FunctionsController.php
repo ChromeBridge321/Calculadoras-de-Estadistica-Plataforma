@@ -64,7 +64,7 @@ class FunctionsController extends Controller
             $Q2 = $this->calculatePercentileValue($data, 50); // Mediana
             $Q3 = $this->calculatePercentileValue($data, 75);
             
-            $bowley = ($Q3 + Q1 - 2 * $Q2) / ($Q3 - Q1);
+            $bowley = ($Q3 + $Q1 - 2 * $Q2) / ($Q3 - $Q1);
             
             return view('CoeficienteBowley', ['result' => round($bowley, 4)]);
         } catch (\Exception $e) {

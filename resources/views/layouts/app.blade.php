@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -8,221 +8,157 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Slab:wght@100..900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap"
         rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>Calculadoras</title>
     <link rel="icon" type="images/png" href="https://calculadoras-de-estadistica-plataforma.onrender.com/images/logo.png">
+    <style>
+        .font-outfit { font-family: 'Outfit', sans-serif; }
+        .font-dmsans { font-family: 'DM Sans', sans-serif; }
+        .accordion-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+            opacity: 0;
+        }
+        .accordion-body.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .sidebar-backdrop {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .sidebar-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .sidebar-mobile {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-mobile.active {
+            transform: translateX(0);
+        }
+        @media (max-width: 640px) {
+            .sidebar-mobile {
+                width: min(280px, 85vw);
+            }
+        }
+    </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
    function validarInput(event) {
     const input = event.target;
     const valor = input.value;
-
-    // Permitir solo números, comas y puntos
     if (!/^[0-9,\.]*$/.test(valor)) {
         input.value = valor.slice(0, -1);
         return;
     }
-
-    // No permitir dos comas seguidas
     if (valor.includes(",,")) {
         input.value = valor.replace(",,", ",");
         return;
     }
-
-    // No permitir dos puntos seguidos
     if (valor.includes("..")) {
         input.value = valor.replace("..", ".");
         return;
     }
-
-    // No permitir que el primer caracter sea una coma
     if (valor.startsWith(",")) {
         input.value = valor.slice(1);
         return;
     }
-
-    // No permitir que el primer caracter sea un punto
     if (valor.startsWith(".")) {
         input.value = valor.slice(1);
         return;
     }
 }
 function validateInput() {
-            const inputField = document.getElementById('inputField');
-            let value = inputField.value;
-
-            // Eliminar cualquier carácter que no sea una letra, una coma o un espacio
-            value = value.replace(/[^a-zA-Z, ]/g, '');
-
-            // No permitir iniciar con una coma o espacio
-            if (value.charAt(0) === ',' || value.charAt(0) === ' ') {
-                value = value.slice(1);
-            }
-
-            // No permitir comas consecutivas o espacios consecutivos
-            value = value.replace(/,{2,}/g, ',');  // Reemplaza dobles comas con una sola coma
-            value = value.replace(/ {2,}/g, ' ');  // Reemplaza dobles espacios con un solo espacio
-
-            // No permitir una coma justo después de un espacio o un espacio justo después de una coma
-            value = value.replace(/, /g, ',');  // Elimina el espacio después de una coma
-            value = value.replace(/ ,/g, ',');  // Elimina el espacio antes de una coma
-
-            // Actualizar el valor del campo de entrada
-            inputField.value = value;
-        }
+    const inputField = document.getElementById('inputField');
+    let value = inputField.value;
+    value = value.replace(/[^a-zA-Z, ]/g, '');
+    if (value.charAt(0) === ',' || value.charAt(0) === ' ') {
+        value = value.slice(1);
+    }
+    value = value.replace(/,{2,}/g, ',');
+    value = value.replace(/ {2,}/g, ' ');
+    value = value.replace(/, /g, ',');
+    value = value.replace(/ ,/g, ',');
+    inputField.value = value;
+}
 </script>
 
-
-<body>
-    <nav class=" pt-2 pb-2 " style="background-color: #DE1141;">
-        <div class="container-fluid">
-            <div class="row">
-                <div class=" col-6">
-                    <a href="{{ url('/') }}"> <img src="{{ asset('images/logo.png') }}" alt=""
-                            class=" img-fluid" style="width: 60px; height: 60px;"></a>
-                </div>
-
-                <div class=" col-6 d-flex justify-content-end align-items-center text-white pe-4">
-                    <h2>StatSolver</h2>
-                </div>
-            </div>
-        </div>
+<body class="font-dmsans bg-gray-50 text-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-red-600 py-3 px-4 sm:px-6 flex items-center justify-between fixed top-0 left-0 right-0 z-40 shadow-lg shadow-red-600/10">
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5 sm:gap-3 no-underline shrink-0">
+            <img src="{{ asset('images/logo.png') }}" alt="StatSolver" class="rounded-lg shrink-0" style="width: 40px; height: 40px; object-fit: cover;">
+            <span class="font-outfit font-bold text-base sm:text-lg text-white">StatSolver</span>
+        </a>
+        <button onclick="toggleSidebar()" class="lg:hidden text-white p-2 -mr-2 rounded-lg hover:bg-white/10 transition-colors" aria-label="Abrir menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
     </nav>
 
-    <div class=" d-flex">
-        <div class=" border border-2 border-end" style="width: 300px; height: 100vh;">
-            <div class="accordion accordion-flush" id="accordionExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                            Medidas de tendencia central
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse add" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <div class=" w-100 ps-3 pb-2 pt-2">
-                                <a href="{{ url('/medididas-de-tendencia-central/media') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Media</a>
+    <div class="flex min-h-screen pt-[56px] sm:pt-[60px]">
+        <!-- Backdrop mobile -->
+        <div onclick="toggleSidebar()" class="sidebar-backdrop fixed inset-0 bg-black/50 z-40 lg:hidden" id="backdrop"></div>
 
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/medididas-de-tendencia-central/mediana') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Mediana</a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/medididas-de-tendencia-central/moda') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Moda</a>
-                            </div>
-
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/medididas-de-tendencia-central/muestra') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Calculadora
-                                    de muestra</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                            Tabla de distribucion de frecuencias
-                        </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/tablas-de-distribucion-de-frecuencias/datos/agrupados') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Datos no agrupados</a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/tablas-de-distribucion-de-frecuencias/datos/no-agrupados') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Datos agrupados</a>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Medidas de Posicion
-                        </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Medidas-de-posicion/cuartiles') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Cuartiles</a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Medidas-de-posicion/deciles') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Deciles</a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Medidas-de-posicion/percentiles') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Percentiles</a>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                            Calculadoras extras
-                        </button>
-                    </h2>
-                    <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-Fisher') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Asimetria
-                                    de Fisher
-                                </a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-Bowley') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Coeficiente
-                                    de Bowley
-                                </a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-Pearson') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Correlación
-                                    de Pearson
-                                </a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Calculadoras-extras/Coeficiente-de-curtosis') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Curtosis
-                                </a>
-                            </div>
-                            <div class=" w-100 ps-3 pb-2">
-                                <a href="{{ url('/Calculadoras-extras/Grafica-de-pareto') }}"
-                                    class=" link-danger link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover ">Grafica de pareto
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
+        <!-- Sidebar desktop -->
+        <aside class="hidden lg:block w-72 bg-white border-r border-gray-200 shrink-0 overflow-y-auto">
+            <div class="p-4">
+                @include('partials._sidebar-nav')
             </div>
+        </aside>
 
-        </div>
-        @yield('Content')
+        <!-- Sidebar mobile -->
+        <aside class="sidebar-mobile fixed top-0 left-0 w-72 h-full bg-white border-r border-gray-200 z-50 lg:hidden overflow-y-auto" id="sidebarMobile">
+            <div class="flex items-center justify-between p-4 pb-2 border-b border-gray-100">
+                <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">
+                    <img src="{{ asset('images/logo.png') }}" alt="StatSolver" class="rounded-lg" style="width: 36px; height: 36px; object-fit: cover;">
+                    <span class="font-outfit font-bold text-base text-gray-900">StatSolver</span>
+                </a>
+                <button onclick="toggleSidebar()" class="p-2 -mr-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500" aria-label="Cerrar menu">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-4">
+                @include('partials._sidebar-nav')
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 min-w-0 p-3 sm:p-5 lg:p-6 overflow-x-hidden">
+            @yield('Content')
+        </main>
     </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebarMobile').classList.toggle('active');
+            document.getElementById('backdrop').classList.toggle('active');
+        }
+
+        function toggleSection(button) {
+            const body = button.nextElementSibling;
+            const icon = button.querySelector('.accordion-icon');
+            const isOpen = body.classList.contains('open');
+
+            document.querySelectorAll('.accordion-body').forEach(el => {
+                el.classList.remove('open');
+            });
+            document.querySelectorAll('.accordion-icon').forEach(el => {
+                el.style.transform = 'rotate(0deg)';
+            });
+
+            if (!isOpen) {
+                body.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
 </body>
 
 </html>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
-
