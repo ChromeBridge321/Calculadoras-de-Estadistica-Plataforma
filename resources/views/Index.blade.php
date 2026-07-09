@@ -45,7 +45,7 @@
             <div class="flex justify-between items-center">
                 <a href="/" class="flex items-center gap-3 no-underline">
                     <img src="{{ asset('images/logo.png') }}" alt="StatSolver" class="rounded-lg" style="width: 44px; height: 44px; object-fit: cover;">
-                    <span class="font-outfit font-bold text-xl text-gray-900">StatSolvera</span>
+                    <span class="font-outfit font-bold text-xl text-gray-900">StatSolver</span>
                 </a>
 
                 <div class="flex items-center" id="navMenu">
