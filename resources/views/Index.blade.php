@@ -12,7 +12,7 @@
         rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>StatSolver - Inicio</title>
-    <link rel="icon" type="images/png" href="https://calculadoras-de-estadistica-plataforma.onrender.com/images/logo.png">
+    <link rel="icon" type="images/png" href="{{ asset('images/logo.png') }}">
     <style>
         .font-outfit { font-family: 'Outfit', sans-serif; }
         .font-dmsans { font-family: 'DM Sans', sans-serif; }
