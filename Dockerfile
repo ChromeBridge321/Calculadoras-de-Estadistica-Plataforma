@@ -46,7 +46,7 @@ RUN npm install
 RUN npm run build
 
 # Expone el puerto 80
-EXPOSE 8089
+EXPOSE 80
 
 # Copia la configuración de Apache
 COPY default.conf /etc/apache2/sites-available/000-default.conf
